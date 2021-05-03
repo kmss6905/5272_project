@@ -9,9 +9,5 @@ def index():
   return render_template('index.html')
   # jinja2템플릿 엔진을 통해 데이터 값들을 index.html에 표현될 수 있다.
 
-@app.route('/showSignUp')
-def showSignUp():
-    return render_template('signup.html')
-    
 if __name__=="__main__":
   app.run(host="211.62.179.66", port=3000, debug=True)
