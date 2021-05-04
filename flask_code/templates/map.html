@@ -2,69 +2,140 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>지도 </title>
-    <style>
-    	body{
-    		margin:0px;
-    	}
+    <title>지도</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    	#map{
-
-    		width:100vw; height:1--vh; min-height:500px;
-    	}
-
-
-
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<!-- 지도를 표시할 div -->
-<div id="map" ></div>
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">GNSS 상시계측 시스템</a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ml-auto ml-md-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="userDropdown" href="#!" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                </li>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#!">Settings</a>
+                    <a class="dropdown-item" href="#!">Activity Log</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/login">Logout</a>
+                </div>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="/">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Interface</div>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Layouts
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/layout-static">Static Navigation</a>
+                                    <a class="nav-link" href="/layout-sidenav-light">Light Sidenav</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Pages
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Authentication
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="/login">Login</a>
+                                            <a class="nav-link" href="/register">Register</a>
+                                            <a class="nav-link" href="/password">Forgot Password</a>
+                                        </nav>
+                                    </div>
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Error
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="/401">401 Page</a>
+                                            <a class="nav-link" href="/404">404 Page</a>
+                                            <a class="nav-link" href="/500">500 Page</a>
+                                        </nav>
+                                    </div>
+                                </nav>
+                            </div>
+                            <div class="sb-sidenav-menu-heading">Addons</div>
+                            <a class="nav-link" href="/charts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Charts
+                            </a>
+                            <a class="nav-link" href="/tables">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Tables
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                        Start Bootstrap
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <div id="map" style="display:block; text-align:center;width:100%;height:350px;"></div>
+    <hr>
+    <hr>
+    <div class="container-fluid">
+      <!-- Example row of columns -->
+      <div class="row">
 
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1a2ff0e58b29e74620f8f0b8bdf5ab66"></script>
-<script>
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-        mapOption = {
-            center: new kakao.maps.LatLng(37.560806, 126.993547), // 지도의 중심좌표
-            level: 12 // 지도의 확대 레벨
-        };
-    // 지도를 생성 
-    var map = new kakao.maps.Map(mapContainer, mapOption); 
+          <div class="container-fluid" id="data-container"></div>
 
-    // 마커를 표시할 위치와 title 객체 배열 
-var positions = [
-    {
-        title: '충무로', 
-        latlng: new kakao.maps.LatLng(37.560806, 126.993644)
-    },
-    {
-        title: '울산', 
-        latlng: new kakao.maps.LatLng(3530.9242397, 12926.7961838)
-    },
+        </div>
+    </div>
+    <hr>
 
+      <footer>
+        <p>&copy; Tom Diethe 2014</p>
+      </footer>
+    </div> <!-- /container -->
 
-];
+            </div>
+        </div>
 
-// 마커 이미지의 이미지 주소
-	var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
-	for (var i = 0; i < positions.length; i ++) {
+    <script src = "{{url_for('static',filename='js/highcharts.js')}}"></script>
 
-    // 마커 이미지의 이미지 크기
-    var imageSize = new kakao.maps.Size(24, 35); 
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=23904f3d2e543d1f81d7ea7f0c9c1291"></script>
+<script src="{{url_for('static',filename='js/map.js')}}"></script>
 
-    // 마커 이미지를 생성합니다    
-    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
-
-    // 마커를 생성합니다
-    var marker = new kakao.maps.Marker({
-        map: map, // 마커를 표시할 지도
-        position: positions[i].latlng, // 마커를 표시할 위치
-        title : positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-        image : markerImage // 마커 이미지 
-    });
-}
-
-</script>
 </body>
 </html>

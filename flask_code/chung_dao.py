@@ -12,4 +12,3 @@ def get_chung():
     data_list = [time()*1000,row[1],row[2]] #Latitude
     conn.close
     return data_list
-get_chung()

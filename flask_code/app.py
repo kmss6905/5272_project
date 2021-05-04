@@ -75,7 +75,8 @@ def live_data():
   content_list = chung_dao.get_chung()
   response = make_response(json.dumps(content_list))
   response.content_type = 'application/json'
-  return response
+  return response  # {a:1500.000,
+                  #   b: 1235.232525}
   
 @app.route('/map')
 def map():

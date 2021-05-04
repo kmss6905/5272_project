@@ -15,7 +15,7 @@ function requestData() {
             chart.series[0].addPoint(point, true, shift);
 
         },
-        cache: false
+        cache: false  // 
     });
 }
 
