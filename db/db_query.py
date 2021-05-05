@@ -8,7 +8,7 @@ def insert_ulsan():
     HOST =  '211.62.179.69'
     PORT = 10004
 
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     curs = conn.cursor(pymysql.cursors.DictCursor)
     idx = 0
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -52,7 +52,7 @@ def insert_chung():
     HOST =  '211.62.179.65'
     PORT = 10008
 
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     curs = conn.cursor(pymysql.cursors.DictCursor)
     idx = 0
 
@@ -91,16 +91,16 @@ def insert_chung():
                 return 
 
 def create_table():
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     try:
         with conn.cursor() as curs:
             sql = "crate table rawdata (device_idx INT NOT NULL, device_id VARCHAR(30) NOT NULL, Create_time DATETIME NOT NULL,Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL,Height DOUBLE NOT NULL, Geoid_heigth DOUBLE NOT NULL) "
-            curs.execute(sql,where)
+            curs.execute(sql, where)
     finally:
         conn.close()
 
 def chung_last_ten():
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     try:
         with conn.cursor() as curs:
             sql = "select * from rawdata_chung order by Create_time desc limit 10"
@@ -112,7 +112,7 @@ def chung_last_ten():
         conn.close()
 
 def ulsan_last_ten():
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     try:
         with conn.cursor() as curs:
             sql = "select * from rawdata_ulsan order by Create_time desc limit 10"
@@ -124,7 +124,7 @@ def ulsan_last_ten():
         conn.close()
 
 def a_z_chung(start_date,end_date):
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     try:
         with conn.cursor() as curs:
             sql = "SELECT Create_time FROM rawdata_chung WHERE Create_time BETWEEN %s AND %s "
@@ -137,7 +137,7 @@ def a_z_chung(start_date,end_date):
         conn.close()
 
 def a_z_ulsan(start_date,end_date):
-    conn = pymysql.connect(host='localhost', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
+    conn = pymysql.connect(host='211.62.179.66', user = 'root', password='tlsjfprtm', db = 'test',charset = 'utf8')
     try:
         with conn.cursor() as curs:
             sql = "SELECT Create_time FROM rawdata_ulsan WHERE Create_time BETWEEN %s AND %s "

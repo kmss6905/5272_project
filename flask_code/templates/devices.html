@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Static Navigation - SB Admin</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <a class="navbar-brand" href="index.html">GNSS 상시계측 시스템</a>
+            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ml-auto ml-md-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="userDropdown" href="#!" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                </li>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#!">Settings</a>
+                    <a class="dropdown-item" href="#!">Activity Log</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/login">Logout</a>
+                </div>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="/">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">Interface</div>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Layouts
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/layout-static">Static Navigation</a>
+                                    <a class="nav-link" href="/layout-sidenav-light">Light Sidenav</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                Pages
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Authentication
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="/login">Login</a>
+                                            <a class="nav-link" href="/register">Register</a>
+                                            <a class="nav-link" href="/password">Forgot Password</a>
+                                        </nav>
+                                    </div>
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Error
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="/401">401 Page</a>
+                                            <a class="nav-link" href="/404">404 Page</a>
+                                            <a class="nav-link" href="/500">500 Page</a>
+                                        </nav>
+                                    </div>
+                                </nav>
+                            </div>
+                            <div class="sb-sidenav-menu-heading">Addons</div>
+                            <a class="nav-link" href="/charts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Charts
+                            </a>
+                            <a class="nav-link" href="/tables">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Tables
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                        Start Bootstrap
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+                        <h1 class="mt-4">{{ device_name }}</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                            <li class="breadcrumb-item active"><a href="/map">Static Navigation</a></li>
+                        </ol>
+                        <div style="height: 100vh">
+                            <div class="container">
+                              <div class="row">
+                                <div class="col">
+                                  <table class="table">
+                                      <thead>
+                                        <tr>
+                                          <th scope="col">관리번호</th>
+                                          <th scope="col">계측기이름</th>
+                                          <th scope="col">건강도</th>
+                                          <th scope="col">자세히보기</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                      {% for device in device_list %}
+
+                                      {% if device['device_name'] == 'ulsan1' %}
+                                          <tr style="background-color: #8fd19e">
+                                          <th scope="row">{{ device['device_id'] }}</th>
+                                          <td>{{ device['device_name'] }}</td>
+                                          <td style="background-color: green">양호</td>
+                                          <td><button>click</button></td>
+                                        </tr>
+                                      {% else %}
+                                          <tr>
+                                          <th scope="row">{{ device['device_id'] }}</th>
+                                          <td>{{ device['device_name'] }}</td>
+                                          <td style="background-color: green">양호</td>
+                                          <td><button>click</button></td>
+                                        </tr>
+                                          {% endif %}
+                                      {% endfor %}
+                                      </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-6">
+                                      <!-- Example row of columns -->
+                                      <div class="row">
+
+                                          <div class="container-fluid" id="data-container"></div>
+
+                                        </div>
+                                </div>
+                                <div class="col">
+                                  지도가 들어갑니다
+                                </div>
+                              </div>
+                              <div class="row">
+                                  <div class="col">
+                                      기간 선택
+
+                                      <form id="date-form" name="data" method="GET">
+                                          <div class="form">
+                                            <label for="start">Start date:</label>
+                                            <input type="date" id="start" name="start"
+                                                   value="2021-05-04"
+                                                   min="2018-01-01" max="2999-12-31">
+
+                                            <label for="start">End date:</label>
+                                            <input type="date" id="end" name="end"
+                                                   value="2021-05-10"
+                                                   min="2018-01-01" max="2999-12-31">
+                                              <input type="button" value="확인" onclick="requestAverageDate(); return false">
+                                          </div>
+                                      </form>
+                                  </div>
+                                  <div class="col-6">
+                                      <table class="table">
+                                      <thead>
+                                        <tr>
+                                              <th scope="col">num</th>
+                                              <th scope="col">start</th>
+                                              <th scope="col">평균위도</th>
+                                              <th scope="col">평균경도</th>
+                                              <th scope="col">평균고도</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                      {% for data in data_list %}
+                                        <tr>
+                                                <td>{{ data['device_id'] }}</td>
+                                                <td>{{ data['tDate'] }}</td>
+                                                <td>{{ data['AVG(Longitude)'] }}</td>
+                                                <td>{{ data['AVG(Latitude)'] }}</td>
+                                                <td>{{ data['AVG(Height)'] }}</td>
+                                        </tr>
+                                      {% endfor %}
+                                      </tbody>
+                                    </table>
+
+{#                                   <figure class="highcharts-figure">#}
+{#                                        <div id="line-container"></div>#}
+{#                                    </figure>#}
+                                </div>
+                                  <div class="col">
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2021</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src = "{{url_for('static',filename='js/highcharts2.js')}}"></script>
+
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/highcharts-more.js"></script>
+        <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=23904f3d2e543d1f81d7ea7f0c9c1291"></script>
+        <script src="{{url_for('static',filename='js/map.js')}}"></script>
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=23904f3d2e543d1f81d7ea7f0c9c1291"></script>
+    </body>
+</html>
