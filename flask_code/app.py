@@ -90,7 +90,7 @@ def graph():
     return render_template('live-graph.html')
 
 
-@app.route('/devices', methods=['GET'])
+@app.route('/device')
 def devices():
     device_name = request.args['info']
     data_list = device_data_dao.get_data()
