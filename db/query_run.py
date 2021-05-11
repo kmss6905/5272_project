@@ -1,4 +1,4 @@
-from db_query import create_table,chung_last_ten,ulsan_last_ten,a_z_chung,a_z_ulsan
+from db_query import create_table,chung_last_ten,ulsan_last_ten,a_z_chung,a_z_ulsan,print_chung,print_ulsan
 
 
 if __name__ == '__main__':
@@ -19,3 +19,9 @@ if __name__ == '__main__':
             chung_last_ten()
         elif where =='ulsan':
             ulsan_last_ten()
+    elif choice ==4:
+        where = input('Where?? ')
+        if where =='chung':
+            print_chung()
+        elif where =='ulsan':
+            print_ulsan()
