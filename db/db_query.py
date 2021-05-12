@@ -104,7 +104,7 @@ def create_table():
     try:
         with conn.cursor() as curs:
             sql = "crate table rawdata (device_idx INT NOT NULL, device_id VARCHAR(30) NOT NULL, Create_time DATETIME NOT NULL,Latitude DOUBLE NOT NULL, Longitude DOUBLE NOT NULL,Height DOUBLE NOT NULL, Geoid_heigth DOUBLE NOT NULL) "
-            curs.execute(sql, where)
+            curs.execute(sql)
     finally:
         conn.close()
 
