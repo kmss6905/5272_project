@@ -52,6 +52,15 @@ def devices():
     # return render_template('devices.html', device_name=device_name, data_list=data_list, device_list=device_list)
     return render_template('device.html')
 
+# 계측기 등록
+@app.route('/register')
+def register_device():
+    return render_template('register_form.html')
+
+@app.route('/building_page')
+def building_page():
+    return render_template('building_page.html')
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=3000, debug=True)
