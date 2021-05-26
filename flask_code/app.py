@@ -10,7 +10,7 @@ import random
 app = Flask(__name__)
 
 
-# @app.route('/')
+@app.route('/')
 # def index():
 #     device_list = device_list_dao.get_device_list()
 #     return render_template('index.html', device_list=device_list)
@@ -71,6 +71,7 @@ def devices():
 @app.route('/register')
 def register_device():
     return render_template('register_form.html')
+
 
 
 if __name__ == "__main__":
