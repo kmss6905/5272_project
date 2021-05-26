@@ -52,7 +52,7 @@ body {
 }
 
 .sidebar .nav-link.active {
-  color: #007bff;
+  color: #163e68;
 }
 
 .sidebar .nav-link:hover .feather,
@@ -107,7 +107,7 @@ body {
 
 /* 표에 쓰이는 건강도 색깔 사각형*/
 .safe{
-  width : 50px;
+  width : 80px;
   height : 25px;
   border-radius: 10px;
   background : rgb(15, 189, 15);
@@ -115,17 +115,8 @@ body {
   text-align:center;
 }
 
-.warn{
-  width : 50px;
-  height : 25px;
-  border-radius: 10px;
-  background : rgb(248, 232, 11);
-  font-size : 15px;
-  text-align:center;
-}
-
 .danger{
-  width : 50px;
+  width : 80px;
   height : 25px;
   border-radius: 10px;
   background :rgb(226, 66, 66);

@@ -5,6 +5,7 @@ import device_list_dao
 import device_data_dao
 import random
 
+
 # Flask 객체 인스턴스 생성
 app = Flask(__name__)
 
@@ -33,15 +34,28 @@ app = Flask(__name__)
 #     return response  # {a:1500.000,
 #     #   b: 1235.232525}
 
-# 건물데시보드
-@app.route('/building')
-def dashboard():
-    return render_template('building_dashboard.html')
 
 # 로그인
 @app.route('/signin')
-def signup():
+def signin():
     return render_template('signin.html')
+
+# 건물대시보드 (로그인x 전체사용자정보_전체적)
+@app.route('/building_dashboard_all')
+def dashboard_all():
+    return render_template('building_dashboard_all.html')
+
+# 건물대시보드 (로그인o_전체적)
+@app.route('/building_dashboard')
+def building_dashboard():
+    return render_template('building_dashboard.html')
+
+
+#특정 건물 정보
+@app.route('/building')
+def building_page():
+    return render_template('building_page.html')
+
 
 # 개별 계측기 정보
 @app.route('/device')
@@ -52,14 +66,11 @@ def devices():
     # return render_template('devices.html', device_name=device_name, data_list=data_list, device_list=device_list)
     return render_template('device.html')
 
+
 # 계측기 등록
 @app.route('/register')
 def register_device():
     return render_template('register_form.html')
-
-@app.route('/building_page')
-def building_page():
-    return render_template('building_page.html')
 
 
 if __name__ == "__main__":
