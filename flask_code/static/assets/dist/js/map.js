@@ -14,7 +14,7 @@ geocoder.addressSearch('서울특별시 중구 퇴계로36길 2', function(resul
 
     // 정상적으로 검색이 완료됐으면 
      if (status === kakao.maps.services.Status.OK) {
-
+        
         var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
         // 결과값으로 받은 위치를 마커로 표시합니다
