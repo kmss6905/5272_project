@@ -1,13 +1,17 @@
 import os
 from flask import Flask, render_template, make_response, request, session, redirect, url_for, escape
 from flask_login import LoginManager, login_user
-from flask_code.Model.User import User
+from Model.User import User
 
 from form import LoginForm
 import json
 import chung_dao
 import device_list_dao
-import device_data_dao
+from device_data_dao import (get_data,get_device_list,get_all_device,get_my_device
+                            ,all_device_info,each_device_building,each_device_info,register_my_device)
+from building_data_dao import (get_all_building, get_user_building,get_my_building_info_map,get_my_building_info_table
+                                ,decide_criteria)
+from box_plot import box_plot,each_plot,plot
 import random
 
 
@@ -129,6 +133,17 @@ def devices():
 def register_device():
     return render_template('register_form.html')
 
+# print(get_all_building()) #
+# print(get_user_building('1')) # 1에다가 로그인 시 여기에 user_id변수를 넣어주면 된다
+# print(get_my_building_info('1')) 
+# print(get_my_device('1'))
+# print(get_my_building_info_table('1','충무로영상센터')) # 충무로영상센터에 찾고싶은 building_name을 넣어주면 된다. 
+# print(decide_criteria(1,'충무로영상센터')) # 한 건축물의 모든 계측기 이상범위 기준// 일단 기준만 받아오고 이상측정을 실시간으로 할지 결정해야할듯
+# print(all_device_info()) 
+# device_id_list = each_device_building(1,'충무로영상센터') # 빌딩이름에 해당하는 계측기의 device_id가 나온다. 
+# each_device_info(device_id_list[0]['device_id']) # 이렇게 하면 선택한 계측기의 정보데이터를 받아올 수 있다. 
+# print(plot('syntest1',6))
+# register_my_device(2,'춘천빌딩1',4,'강원도 춘천시 33','test','chuncheon1','36.123/126.123/44.123') # register페이지의 폼에 데이터 입력하면 인자에 해당 데이터변수가 입력되고 db에 insert된다
 
 if __name__ == "__main__":
     app.run(host="localhost", port=3000, debug=True)
