@@ -45,6 +45,7 @@ def insert_chung():
             if len(dq_chung)>3000:
                 curs.executemany(sql, dq_chung)
                 conn.commit()
+                dq_chung = []
     except socket.timeout:
         print('Data receive Error')
         curs.executemany(sql, dq_chung)
@@ -93,6 +94,7 @@ def insert_ulsan():
             if len(dq_ulsan)>3000:
                 curs.executemany(sql, dq_ulsan)
                 conn.commit()
+                dq_ulsan = []
     except socket.timeout:
         print('Data receive Error')
         curs.executemany(sql, dq_ulsan)
@@ -163,8 +165,8 @@ def print_chung():
     PORT = 10008
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        data = s.recv(1024)
         while 1:
+            data = s.recv(1024)
             if data is not None:    
                 print(data)
             else:
