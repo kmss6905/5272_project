@@ -11,6 +11,20 @@ def get_all_building():
     rows = cursor.fetchall()
     conn.close()
     return rows
+# 모든 사용자의 건축물 정보 // 건축물 이름, 종류, 건축물 주소, 계측기 개수, 이상 여부
+def get_all_building_info():
+    conn = db_conn.get_connection()
+    sql_b = 'select building_name,building_type_name,building_address from building'
+    sql_d = 'select count(*) from device where building_name=%s'
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute(sql_b)
+    building_info = cursor.fetchall()
+    for info in building_info:
+        cursor.execute(sql_d,info['building_name'])
+        device_num = cursor.fetchone()
+        info['device_num'] = device_num['count(*)']
+    conn.close()
+    return building_info
 
 # 로그인 후 나의 건축물의 수 //예외처리 필요??
 def get_user_building(login_user_id):
