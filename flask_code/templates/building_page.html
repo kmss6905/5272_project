@@ -47,10 +47,10 @@
       <ul class="navbar-nav px-3">
       </ul>
     </header>
-    
+
     <div class="container-fluid">
       <div class="row">
-    
+
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
           <div class="position-sticky">
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -59,34 +59,34 @@
                 <span data-feather="plus-circle"></span>
               </a>
             </h6>
-    
+
             <ul class="nav flex-column">
-              
+
               <!-- 사용자의 총 건축물 대시보드 화면으로 연결 -->
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="building_dashboard">
-    
+
                   Structure Dashboard
                 </a>
               </li>
-    
+
               <!-- 사용자의 특정 건축물 정보 화면으로 연결 (현 페이지) -->
               <li class="nav-item">
                 <a class="nav-link" href="building">
-    
+
                   Structure Info
                 </a>
               </li>
-    
+
               <!-- 사용자의 특정 계측기 정보 화면으로 연결-->
               <li class="nav-item">
                 <a class="nav-link" href="device">
-    
+
                   Device Info
                 </a>
               </li>
             </ul>
-    
+
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
               <span>User</span>
               <a class="link-secondary" aria-label="Add a new report">
@@ -94,7 +94,7 @@
               </a>
             </h6>
             <ul class="nav flex-column mb-2">
-    
+
               <!-- 계측기 등록하는 화면으로 연결-->
               </li>
               <li class="nav-item">
@@ -103,28 +103,57 @@
                   계측기 등록하기
                 </a>
               </li>
-    
+
             </ul>
           </div>
         </nav>
 
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">실시간 구조물 현황</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-          </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-          </button>
-        </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h2>등록한 건축물 현황 지도</h2>
       </div>
-      <h2>'건축물 이름'</h2>
-      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+<!--
+
+      <div id="layoutSidenav_content">
+        <div id="map" style="display:block; text-align:center;width:100%;height:350px;"></div>
+
+
+     <div id="roadview" style="width:100%;height:300px;"></div>
+-->
+      <style>
+    .screen_out {display:block;overflow:hidden;position:absolute;left:-9999px;width:1px;height:1px;font-size:0;line-height:0;text-indent:-9999px}
+    .wrap_content {overflow:hidden;height:330px}
+    .wrap_map {width:50%;height:300px;float:left;position:relative}
+    .wrap_roadview {width:50%;height:300px;float:left;position:relative}
+    .wrap_button {position:absolute;left:15px;top:12px;z-index:2}
+    .btn_comm {float:left;display:block;width:70px;height:27px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/sample_button_control.png) no-repeat}
+    .btn_linkMap {background-position:0 0;}
+    .btn_resetMap {background-position:-69px 0;}
+    .btn_linkRoadview {background-position:0 0;}
+    .btn_resetRoadview {background-position:-69px 0;}
+
+   </style>
+      <div class="wrap_content">
+    <div class="wrap_map">
+        <div id="map" style="width:100%;height:100%"></div> <!-- 지도를 표시할 div 입니다 -->
+        <div class="wrap_button">
+            <a href="javascript:;" class="btn_comm btn_linkMap" target="_blank" onclick="moveKakaoMap(this)"><span class="screen_out">지도 크게보기</span></a> <!-- 지도 크게보기 버튼입니다 -->
+            <a href="javascript:;" class="btn_comm btn_resetMap" onclick="resetKakaoMap()"><span class="screen_out">지도 초기화</span></a> <!-- 지도 크게보기 버튼입니다 -->
+        </div>
+    </div>
+    <div class="wrap_roadview">
+        <div id="roadview" style="width:100%;height:100%"></div> <!-- 로드뷰를 표시할 div 입니다 -->
+        <div class="wrap_button">
+            <a href="javascript:;" class="btn_comm btn_linkRoadview" target="_blank" onclick="moveKakaoRoadview(this)"><span class="screen_out">로드뷰 크게보기</span></a> <!-- 로드뷰 크게보기 버튼입니다 -->
+            <a href="javascript:;" class="btn_comm btn_resetRoadview" onclick="resetRoadview()"><span class="screen_out">로드뷰 크게보기</span></a> <!-- 로드뷰 리셋 버튼입니다 -->
+        </div>
+    </div>
+  </div>
+      <div class="division"></div>
+
+
+
 
       <h2>설치된 계측기 리스트</h2>
       <div class="table-responsive">
@@ -132,125 +161,44 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>관리번호</th>
-              <th>이름</th>
-              <th>안전도</th>
-              <th>자세히보기</th>
+              <th>계측기 이름</th>
+              <th>계측기 등록일</th>
+              <th>이상 여부</th>
+
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>1,001</td>
-              <td>random</td>
-              <td>data</td>
-              <td>placeholder</td>
-              <td>text</td>
+              <td>1</td>
+              <td> <a href="device">22013</a></td>
+
+              <td>2021-04-05</td>
+              <td><div class="safe">정상</div></td>
+
             </tr>
             <tr>
-              <td>1,002</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
-              <td>visual</td>
-              <td>layout</td>
+              <td>2</td>
+              <td> <a href="device">22014</a></td>
+              <td>2021-04-05</td>
+              <td><div class="safe">정상</div></td>
+
             </tr>
             <tr>
-              <td>1,003</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>dashboard</td>
-              <td>tabular</td>
+              <td>3</td>
+              <td> <a href="device">22015</a></td>
+              <td>2021-04-05</td>
+              <td><div class="safe">정상</div></td>
+
             </tr>
             <tr>
-              <td>1,003</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>illustrative</td>
-              <td>data</td>
+              <td>4</td>
+              <td> <a href="device">22016</a></td>
+              <td>2021-04-05</td>
+              <td><div class="safe">정상</div></td>
+
             </tr>
-            <tr>
-              <td>1,004</td>
-              <td>text</td>
-              <td>random</td>
-              <td>layout</td>
-              <td>dashboard</td>
-            </tr>
-            <tr>
-              <td>1,005</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
-              <td>text</td>
-              <td>placeholder</td>
-            </tr>
-            <tr>
-              <td>1,006</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>rich</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,007</td>
-              <td>placeholder</td>
-              <td>tabular</td>
-              <td>information</td>
-              <td>irrelevant</td>
-            </tr>
-            <tr>
-              <td>1,008</td>
-              <td>random</td>
-              <td>data</td>
-              <td>placeholder</td>
-              <td>text</td>
-            </tr>
-            <tr>
-              <td>1,009</td>
-              <td>placeholder</td>
-              <td>irrelevant</td>
-              <td>visual</td>
-              <td>layout</td>
-            </tr>
-            <tr>
-              <td>1,010</td>
-              <td>data</td>
-              <td>rich</td>
-              <td>dashboard</td>
-              <td>tabular</td>
-            </tr>
-            <tr>
-              <td>1,011</td>
-              <td>information</td>
-              <td>placeholder</td>
-              <td>illustrative</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,012</td>
-              <td>text</td>
-              <td>placeholder</td>
-              <td>layout</td>
-              <td>dashboard</td>
-            </tr>
-            <tr>
-              <td>1,013</td>
-              <td>dashboard</td>
-              <td>irrelevant</td>
-              <td>text</td>
-              <td>visual</td>
-            </tr>
-            <tr>
-              <td>1,014</td>
-              <td>dashboard</td>
-              <td>illustrative</td>
-              <td>rich</td>
-              <td>data</td>
-            </tr>
-            <tr>
-              <td>1,015</td>
-              <td>random</td>
-              <td>tabular</td>
-              <td>information</td>
-              <td>text</td>
-            </tr>
+
+
           </tbody>
         </table>
       </div>
@@ -263,5 +211,13 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
     <script src="{{url_for('static', filename='assets/dashboard/dashboard.js')}}"></script>
+
+    <script src="{{url_for('static',filename='assets/dashboard/dashboard.js')}}"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=34d1438a57ce5be71a7e7fb9680a344d&libraries=services,clusterer,drawing"></script>
+
+        <!-- 지도 관련 자바스크립트-->
+    <script src="{{url_for('static',filename='assets/dist/js/roadview.js')}}"></script>
+
+
   </body>
 </html>
