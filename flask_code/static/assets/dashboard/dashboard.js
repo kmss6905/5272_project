@@ -1,8 +1,6 @@
 /* globals Chart:false, feather:false */
 
 (function () {
-
-
   // Graphs
   var ctx = document.getElementById('myChart')
   var ctx2 = document.getElementById('myChart2')
