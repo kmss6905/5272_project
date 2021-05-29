@@ -1,3 +1,9 @@
 __pycache__
-flask_code/__pycache__
+flask_code/__pycache__/*.pyc
 .idea
+*.pyc
+db/__pycahe__/*.pyc
+
+# js 패키지들 cdn 으로 사용하지 않으려고 합니다.
+node_modules
+package-lock.json
