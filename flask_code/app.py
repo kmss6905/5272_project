@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g
-
+from device_data_dao import each_device_info
+from model.user import User
+from repo.user_repo import *  # USER repository
 
 
 # Flask 객체 인스턴스 생성
-from flask_code.device_data_dao import each_device_info
-from flask_code.model.user import User
-from flask_code.repo.user_repo import *  # USER repository
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abcd'  # 세션을 이용한 로그인 시스템을 만들기위해서 필요함
 
@@ -46,25 +45,47 @@ def login():
                 return redirect(url_for('index'))  # dashboard_building 페이지로 이동
         return render_template('signin.html')
 
-
-# 건물대시보드
+# 주희님 이제 경로가 변경되었습니다.
+# 로그인하고 들어오시면 아마 주소창이 /index로 변경되었을 겁니다.
 @app.route('/index')
 def index():
     if 'user_id' in session:
+
+        print(g.user.id)
+        '''
+         로그인 하면 g.user 객체를 활용하시면 됩니다.로그인한 유저의 고유 아이디 값 입니다. 그 밖에 이메일 등등의 정보도 있으니 자세한 건
+         model 폴더에 user.py 참조하시면 됩니다.
+        '''
+
         return render_template('building_dashboard.html')  # 로그인 했다면 해당 페이지 반환
     else:
         return render_template('building_dashboard_all.html')  # 로그인 하지 않았다면 해당 페이지로 이동합니다.
 
 
 # 특정 건물 정보
-@app.route('/building')
-def building_page():
-    return render_template('building_page.html')
+# 주희님께서 building_dashboard.html 작업하실 때 개별 건축물 클릭하면 가령 충무로영상센터의 경우 /building/충무로영상센터 href 설정 해주시면 됩니다.
+# 이 부분 변경되었습니다.
+@app.route('/building/<building_name>')
+def building_page(building_name):
+    if building_name is None:
+        return redirect(url_for('index'))  # 이 경우 index() 라우팅으로 이동 -> building_dashboard.html 로 이동
+
+    if 'user_id' in session:  # 로그인 했다면
+        # building_name 을 받아 추가적인 데이터를 building_page.html 에 필요한 데이터를 넘기면 됩니다.
+        return render_template('building_page.html')  # 정상적인 building_page.html 과 데이터 반환
+    else:  # 로그인하지 않은 유저라면
+        flash('회원만 접근 가능합니다')
+        return render_template('signin.html')  # 로그인화면으로 이동합니다.
 
 
 # 개별 계측기 정보
-@app.route('/device')
-def devices():
+# 성연님 개별 디바이스 클릭하실 때 이렇게 넘겨주면 고맙겠습니다!
+# /building/{building_name}/{device_id}
+# ex) /building/충무로영상센터/gnss1
+# 그러면 저는 충무로영상센터(건물이름) 과 gnss1(특정계측기) 를 이용해서 작업을 할 수 있을 거 같습니다.
+@app.route('/building/<building_name>/<device_id>')
+def devices(building_name, device_id):
+    print(building_name, device_id)
     device_info = each_device_info('syntest1')
     return render_template('device.html', device_info=device_info)
 
