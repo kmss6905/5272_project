@@ -1,122 +1,93 @@
-from flask import Flask, render_template, make_response, request
-import json
-import chung_dao
-import device_list_dao
-import device_data_dao
-import random
-
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g
+from device_data_dao import each_device_info
+from model.user import User
+from repo.user_repo import *  # USER repository
 
 
 # Flask 객체 인스턴스 생성
 app = Flask(__name__)
-# app.secret_key = os.urandom(24) # 코드는 사용자 세션 관리를 할 때 필요한 정보입니다.
+app.config['SECRET_KEY'] = 'abcd'  # 세션을 이용한 로그인 시스템을 만들기위해서 필요함
+
+# 모든 요청에 로그인 유무를 확인하여 글로벌 객체에 유저정보를 넣습니다. 앞으로 g.user <-- 에 접근하여 유저정보를 가져오시면 됩니다.
+@app.before_request
+def before_request():
+    print(session)
+    if 'user_id' in session:
+        user_dao = get_user_by_id(session['user_id'])
+        user_dto = User(user_dao)  # 우리가 사용하는 User 객체 (여기는 패스워드가 빠져있다)
+        g.user = user_dto
 
 
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-#
-#
-# # 전역으로 우선 설정합니다.(나중에는 DB와 연동하겠습니다)
-# USERS = {
-#     "kmss69052@naver.com": User("kmss69052@naver.com", passwd_hash='123'),
-#     "admin@naver.com": User("admin@naver.com", passwd_hash='123'),
-#     "admin2@naver.com": User("admin2@naver.com", passwd_hash='123'),
-# }
+# 로그인 기능
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+    else:
+        if request.method == 'POST':
+            username = request.form['username']  # 클라이언트로 부터 받아온 유저아이디
+            password = request.form['password']  # 패스워트
+
+            # 잘못된 아이디
+            user = get_user_by_user_nickname(username)  # 유저를 가져옵니다.
+            if not get_user_by_user_nickname(username):  # 유저가 없다면
+                flash("존재하지 않는 유저입니다")
+                return redirect(url_for('login'))  # 다시 로그인 페이지로 이동
+
+            # 잘못된 비밀번호
+            if user and user['user_password'] != password:
+                flash("잘못된 패스워드 입니다")
+                return redirect(url_for('login'))  # 다시 로그인 페이지로 이동
+
+            # 로그인 성공
+            if user and user['user_password'] == password:
+                session['user_id'] = user['id']  # user_id : 1 (로그인 유저의 고유의 아이디값 추가)
+                return redirect(url_for('index'))  # dashboard_building 페이지로 이동
+        return render_template('signin.html')
+
+# 주희님 이제 경로가 변경되었습니다.
+# 로그인하고 들어오시면 아마 주소창이 /index로 변경되었을 겁니다.
+@app.route('/index')
+def index():
+    if 'user_id' in session:
+
+        print(g.user.id)
+        '''
+         로그인 하면 g.user 객체를 활용하시면 됩니다.로그인한 유저의 고유 아이디 값 입니다. 그 밖에 이메일 등등의 정보도 있으니 자세한 건
+         model 폴더에 user.py 참조하시면 됩니다.
+        '''
+
+        return render_template('building_dashboard.html')  # 로그인 했다면 해당 페이지 반환
+    else:
+        return render_template('building_dashboard_all.html')  # 로그인 하지 않았다면 해당 페이지로 이동합니다.
 
 
-# 로그인 객체 가져올 때 사용 ( user_email 로 해당 사용자 객체 가져옴 )
-# @login_manager.user_loader
-# def user_loader(user_email):
-#     return USERS[user_email]
+# 특정 건물 정보
+# 주희님께서 building_dashboard.html 작업하실 때 개별 건축물 클릭하면 가령 충무로영상센터의 경우 /building/충무로영상센터 href 설정 해주시면 됩니다.
+# 이 부분 변경되었습니다.
+@app.route('/building/<building_name>')
+def building_page(building_name):
+    if building_name is None:
+        return redirect(url_for('index'))  # 이 경우 index() 라우팅으로 이동 -> building_dashboard.html 로 이동
 
-# @app.route('/')
-# def index():
-#     device_list = device_list_dao.get_device_list()
-#     return render_template('index.html', device_list=device_list)
-
-
-# 주석에 있는 부분 참고할 게 있어서 지우지 않았습니다! 나중에 지울예정
-# @app.route('/info', methods=['GET'])
-# def get_data():
-#     data = device_data_dao.get_data()
-#     print(data)
-#     response = make_response(json.dumps(data))
-#     response.content_type = 'application/json'
-#     return response
-
-#
-# @app.route('/live-data')
-# def live_data():
-#     content_list = chung_dao.get_chung()
-#     response = make_response(json.dumps(content_list))
-#     response.content_type = 'application/json'
-#     return response  # {a:1500.000,
-#     #   b: 1235.232525)
-
-
-# @app.route('/')
-# def index():
-#     if 'username' in session:
-#         username = session['username']
-#         return
-
-
-# 로그인
-@app.route('/signin')
-def signin():
-    return render_template('signin.html')
-
-# # 로그인
-# @app.route('/api/login', methods=['POST'])
-# def login():
-#     if request.method == 'POST':
-#         session['username'] = request.form['username']
-#         return redirect(url_for('building_dashboard')) # 로그인 했을 경우는 해당 페이지로 이동
-#
-#     user_email = request.json['user_email']
-#     passwd_hash = request.json['passwd_hash']
-#     if user_email not in USERS:
-#         json_res = {'ok': False, 'error': 'Invalid user_id or password'}
-#     elif not USERS[user_email].can_login(passwd_hash):
-#         json_res = {'ok': False, 'error': 'Invalid user_id or password'}
-#     else:
-#         json_res = {'ok': True, 'msg': 'user <%s> logined' % user_email}
-#         USERS[user_email].authenticated = True
-#         # User 인스턴스를 current_user 에 등록
-#         login_user(USERS[user_email], remember=True)
-#         session['username'] = user_email # session 등록
-#     return user_email(json_res)
-
-
-
-
-
-
-# 건물대시보드 (로그인x 전체사용자정보_전체적)
-@app.route('/building_dashboard_all')
-def dashboard_all():
-    return render_template('building_dashboard_all.html')
-
-# 건물대시보드 (로그인o_전체적)
-@app.route('/building_dashboard')
-def building_dashboard():
-    return render_template('building_dashboard.html')
-
-
-#특정 건물 정보
-@app.route('/building')
-def building_page():
-    return render_template('building_page.html')
+    if 'user_id' in session:  # 로그인 했다면
+        # building_name 을 받아 추가적인 데이터를 building_page.html 에 필요한 데이터를 넘기면 됩니다.
+        return render_template('building_page.html')  # 정상적인 building_page.html 과 데이터 반환
+    else:  # 로그인하지 않은 유저라면
+        flash('회원만 접근 가능합니다')
+        return render_template('signin.html')  # 로그인화면으로 이동합니다.
 
 
 # 개별 계측기 정보
-@app.route('/device')
-def devices():
-    # device_name = request.args['info']
-    # data_list = device_data_dao.get_data()
-    # device_list = device_list_dao.get_device_list()
-    # return render_template('devices.html', device_name=device_name, data_list=data_list, device_list=device_list)
-    return render_template('device.html')
+# 성연님 개별 디바이스 클릭하실 때 이렇게 넘겨주면 고맙겠습니다!
+# /building/{building_name}/{device_id}
+# ex) /building/충무로영상센터/gnss1
+# 그러면 저는 충무로영상센터(건물이름) 과 gnss1(특정계측기) 를 이용해서 작업을 할 수 있을 거 같습니다.
+@app.route('/building/<building_name>/<device_id>')
+def devices(building_name, device_id):
+    print(building_name, device_id)
+    device_info = each_device_info('syntest1')
+    return render_template('device.html', device_info=device_info)
 
 
 # 계측기 등록

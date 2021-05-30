@@ -167,11 +167,12 @@ def print_chung():
         s.connect((HOST, PORT))
         while 1:
             data = s.recv(1024)
-            if data is not None:    
-                print(data)
-            else:
-                print('data None')
-                break
+            print(data)
+            # if data is not None:    
+            #     print(data)
+            # else:
+            #     print('data None')
+            #     break
     return 
 
 def print_ulsan():
