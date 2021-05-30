@@ -1,5 +1,5 @@
 import pymysql
-from flask_code.db_conn import get_connection
+from db_conn import get_connection
 
 
 # 닉네임을 통해 유저데이터를 값을 반환받습니다.
