@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from device_data_dao import each_device_info
 from model.user import User
 from repo.user_repo import *  # USER repository
+import building_data_dao
+import device_list_dao
+import device_data_dao
 
 
 # Flask 객체 인스턴스 생성
@@ -56,10 +59,19 @@ def index():
          로그인 하면 g.user 객체를 활용하시면 됩니다.로그인한 유저의 고유 아이디 값 입니다. 그 밖에 이메일 등등의 정보도 있으니 자세한 건
          model 폴더에 user.py 참조하시면 됩니다.
         '''
+        building_num = building_data_dao.get_user_building(g.user.id) #건축물개수
+        device_num = device_data_dao.get_my_device(g.user.id) #계측기개수
+        building_map = building_data_dao.get_user_building_info(g.user.id) #이름종류주소계측기개수
+        #decide_criteria = building_dat_dao.decide_criteria(g.user.id) #이상여부
+        return render_template('building_dashboard.html', building_num=building_num, device_num=device_num, building_map=building_map)  #building_table=building_table, decide_criteria=decide_criteria
 
-        return render_template('building_dashboard.html')  # 로그인 했다면 해당 페이지 반환
+         # 로그인 했다면 해당 페이지 반환
     else:
-        return render_template('building_dashboard_all.html')  # 로그인 하지 않았다면 해당 페이지로 이동합니다.
+        building_num_all = building_data_dao.get_all_building() #건축물개수
+        device_num_all = device_data_dao.get_all_device() #계측기개수
+        building_info = building_data_dao.get_all_building_info() #이름종류주소개수이상여부
+        return render_template('building_dashboard_all.html', building_num_all=building_num_all, device_num_all=device_num_all, building_info=building_info)
+        # 로그인 하지 않았다면 해당 페이지로 이동합니다.
 
 
 # 특정 건물 정보

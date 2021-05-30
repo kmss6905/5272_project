@@ -60,7 +60,7 @@
           
           <!-- 사용자의 총 건축물 대시보드 화면으로 연결 (현 페이지) -->
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="building_dashboard">
+            <a class="nav-link active" aria-current="page" href="index">
 
               Structure Dashboard
             </a>
@@ -68,7 +68,7 @@
 
           <!-- 사용자의 특정 건축물 정보 화면으로 연결 -->
           <li class="nav-item">
-            <a class="nav-link" href="building">
+            <a class="nav-link" href="building_page">
 
               Structure Info
             </a>
@@ -76,7 +76,7 @@
 
           <!-- 사용자의 특정 계측기 정보 화면으로 연결-->
           <li class="nav-item">
-            <a class="nav-link" href="device">
+            <a class="nav-link" href="devices">
 
               Device Info
             </a>
@@ -94,7 +94,7 @@
           <!-- 계측기 등록하는 화면으로 연결-->
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="register">
+            <a class="nav-link" href="register_device">
               <span data-feather="file-text"></span>
               계측기 등록하기
             </a>
@@ -113,7 +113,7 @@
           <div class="row">
             <div class="col-xl-3 col-md-6">
               <div class="card bg-normal text-white mb-4">
-                <div class="card-body">2개</div>   <!-- 나의 총 건축물 개수 정보 필요 -->
+                <div class="card-body">  {{ building_num[0].get('count(distinct(building.building_type_name))')}} 개 </div>   <!-- 나의 총 건축물 개수 정보 필요 -->
                 <div class="card-footer d-flex align-items-center justify-content-between">
                   <a class="small text-white stretched-link"> 나의 건축물 </a>
                   <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -122,7 +122,7 @@
             </div>
             <div class="col-xl-3 col-md-6">
               <div class="card bg-normal text-white mb-4">
-                <div class="card-body">5개</div>   <!-- 나의 총 계측기 개수 정보 필요-->
+                <div class="card-body"> {{device_num[0].get('count(distinct(device_id))')}} 개 </div>   <!-- 나의 총 계측기 개수 정보 필요-->
                 <div class="card-footer d-flex align-items-center justify-content-between">
                   <a class="small text-white stretched-link"> 나의 계측기</a>
                   <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -150,42 +150,38 @@
             <tr>
               <th>#</th>
               <th>건축물 이름</th>
-              <th>건축물 주소</th>
-              <th>건축물 종류</th>
+              <th>주소</th>
+              <th>종류</th>
+              <th>계측기 개수</th>
               <th>이상 여부</th>
             </tr>
           </thead>
 
           <!-- 이상여부는 div class="safe"이면 초록색 원, div class="danger"이면 빨간색 원 그려짐(dashboard.css) -->
           <tbody>
+            {% for building in building_map %}
             <tr>
-              <td>1</td>
-                <td> <a href="building">동국대학교 충무로영상센터</a></td>
-              <td>서울특별시 중구 퇴계로36길 2</td>
-              <td>건물</td>
-              <td><div class="safe">정상</div></td>
+              {% if building['building_name'] is not none%}
+                <td> {{ building['id'] }} </td>
+                <td><a href="{{ '/building/' + building['building_name'] }}">{{building['building_name']}}</a></td> <!--건축물이름-->
+              {% else %}
+                <td> - </td>
+              {% endif %}
+              <td>{{building['building_address']}}</td> <!--주소-->
+              {% if building['building_type_name'] == '미정' %}
+                <td> - </td>
+              {% else %}
+                <td>{{building['building_type_name']}}</td> <!--종류-->
+              {% endif %}
+              <td>{{ building['device_num'] }}개</td> <!--계측기개수-->
+              {% if building['device_num'] == 4 %} <!--이상여부인데 현재 임의로 테스트 용으로 막 써놓음-->
+                <td> <div class="safe"> 정상 </div> </td>
+              {% else %}
+                <td> <div class="danger"> 이상 발생 </div> </td>
+              {% endif %}
+              
             </tr>
-            <tr>
-              <td>2</td>
-              <td> <a href="building"> 울산 현대중공업 </a> </td>
-              <td>임랑 해수욕장 부근 바다 (35.309242397, 129.267961838)</td>
-              <td>방파제</td>
-              <td><div class="safe">정상</div></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td> <a href="building"> example1 </a> </td>
-              <td> 동국대학교 </td>
-              <td>건물</td>
-              <td><div class="safe">정상</div></td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td> <a href="building"> example2 </a> </td>
-              <td> 동국대학교 </td>
-              <td>교량</td>
-              <td><div class="danger">이상 발생</div></td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>

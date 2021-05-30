@@ -7,7 +7,7 @@ var mapContainer = document.getElementById('map'), // 지도를 표시할 div
 var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
 // 주소-좌표 변환 객체를 생성합니다
-var geocoder = new kakzao.maps.services.Geocoder();
+var geocoder = new kakao.maps.services.Geocoder();
 
 // 주소로 좌표를 검색합니다
 geocoder.addressSearch('서울특별시 중구 퇴계로36길 2', function(result, status) {
