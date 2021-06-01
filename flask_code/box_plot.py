@@ -3,11 +3,20 @@ import pymysql
 from datetime import datetime, timedelta
 import pandas as pd
 
-def box_plot(device_id,start,end):  # 시작과 끝 날짜, 원하는 계측기이름을 정해주면 해당 lat,long,heigth,create_time을 가져오는 sql 함수 
+def box_plot_chung(device_id,start,end):  # 시작과 끝 날짜, 원하는 계측기이름을 정해주면 해당 lat,long,heigth,create_time을 가져오는 sql 함수 
     conn = db_conn.get_connection()
-    sql ='SELECT Latitude,Longitude,Height,Create_time FROM rawdata_chung WHERE (device_id=%s) AND (Create_time BETWEEN %s AND %s);'
+    sql ='SELECT Latitude/100,Longitude/100,Height,Create_time FROM rawdata_chung WHERE (device_id=%s) AND (Create_time BETWEEN %s AND %s);'
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     values = ('b\''+device_id+'$GNGGA',start,end)
+    cursor.execute(sql,values)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows 
+def box_plot_ulsan(device_id,start,end):  # 시작과 끝 날짜, 원하는 계측기이름을 정해주면 해당 lat,long,heigth,create_time을 가져오는 sql 함수 
+    conn = db_conn.get_connection()
+    sql ='SELECT Latitude/100,Longitude/100,Height,Create_time FROM rawdata_ulsan WHERE (device_id=%s) AND (Create_time BETWEEN %s AND %s);'
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    values = (device_id,start,end)
     cursor.execute(sql,values)
     rows = cursor.fetchall()
     conn.close()
@@ -37,11 +46,14 @@ def plot(device_id,box_num):
     # today = datetime.today()
     today = datetime(2021,4,29).date()
     today_minus = today - timedelta(days=5)
-    data_all = box_plot(device_id,today_minus,today)
+    if device_id =='syntest1':
+        data_all = box_plot_chung(device_id,today_minus,today)
+    else:
+        data_all = box_plot_ulsan(device_id,today_minus,today)
 
     for data in data_all:
-        lat.append(data['Latitude'])
-        long.append(data['Longitude'])
+        lat.append(data['Latitude/100'])
+        long.append(data['Longitude/100'])
         height.append(data['Height'])
         time.append(data['Create_time'])
 
@@ -73,5 +85,3 @@ def plot(device_id,box_num):
         ]
     }
     return plot_data
-
-print(plot('syntest1',5))
