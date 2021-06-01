@@ -29,7 +29,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/dist/css/styles.css') }}">
   </head>
   <body>
-    
+{#                {% for data in plot['boxplot_data'] %}#}
+{#                    <meta id="my-data-{{ data['value'] }}" data-name="{{ data['value'] }}" data-others="{{ data['data'] }}">#}
+{#                {% endfor %}#}
+{#        {% endfor %}#}
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-3 me-0 px-3" href="building_dashboard">GNSS 상시계측 시스템</a>  <!--col-lg-2를 search 없애면서 3으로 늘림-->
       <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +59,6 @@
               <!-- 사용자의 총 건축물 대시보드 화면으로 연결 -->
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="building_dashboard">
-    
                   Structure Dashboard
                 </a>
               </li>
@@ -102,15 +104,13 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <!-- 계측기의 이름이 들어갑니다. -->
-            {{ device_info }}
-        <h1 class="h2">GNSS1</h1>
-
+        <h1 class="h2">{{ device_info.device_name }}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <!-- 현재 계측기의 지역 -->
             <i class="bi bi-geo-alt"></i>
             <div class="location_name">
-              서울특별시 중구 필동2가
+              {{ device_info.device_location }}
             </div>
           </div>
         </div>
@@ -120,14 +120,14 @@
         <!-- 계측기 정보 [ data ]-->
         <div class="col">
           <div class="card">
-            <div class="card-header">계측기 이름</div>
+            <div class="card-header">계측기 기본 정보</div>
             <div class="card-body">
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><i class="bi bi-geo-alt"></i> 서울시 중구 필동 2가</li>
-                <li class="list-group-item"><i class="bi bi-telephone"></i> 01094260450</li>
-                <li class="list-group-item">위도 : 36.2312</li>
-                <li class="list-group-item">경도 : 127.32421</li>
-                <li class="list-group-item">고도 : 63.42121</li>
+                <li class="list-group-item"><i class="bi bi-geo-alt"></i> {{ device_info.device_location }}</li>
+                <li class="list-group-item"><i class="bi bi-telephone"></i> {{ device_info.user_phone_number }}</li>
+                <li class="list-group-item">위도 : {{ device_info.device_latitude }}</li>
+                <li class="list-group-item">경도 : {{ device_info.device_longitude }}</li>
+                <li class="list-group-item">고도 : {{ device_info.device_height }}</li>
               </ul>
             </div>
           </div>
@@ -138,12 +138,12 @@
               <div class="card-header">날씨정보</div>
               <div class="card-body">
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item"><i class="bi bi-geo-alt"></i>서울시 중구 필동 2가</li>
-                  <li class="list-group-item"><i class="bi bi-thermometer-sun"></i> 온도 : 20</li>
-                  <li class="list-group-item"><i class="bi bi-thermometer-sun"></i> 체감 : 21</li>
-                  <li class="list-group-item"><i class="bi bi-cloud-drizzle"></i> 강수 : 30%</li>
-                  <li class="list-group-item"><i class="bi bi-droplet-fill"></i> 습도 : 30%</li>
-                  <li class="list-group-item"><i class="bi bi-wind"></i> 풍향 : 북동풍 2m/s</li>
+                  <li class="list-group-item"><i class="bi bi-geo-alt"></i> 위치 :  {{ weatherData['위치'] }}</li>
+                  <li class="list-group-item"><i class="bi bi-thermometer-sun"></i> 온도 : {{ weatherData['기온'] }}</li>
+                  <li class="list-group-item"><i class="bi bi-cloud-drizzle"></i> 강수 : {{ weatherData['강수확률'] }} % </li>
+                  <li class="list-group-item"><i class="bi bi-droplet-fill"></i> 습도 : {{ weatherData['습도'] }} % </li>
+                  <li class="list-group-item"><i class="bi bi-wind"></i> 풍향 : {{ weatherData['방향'] }}</li>
+                  <li class="list-group-item"><i class="bi bi-wind"></i> 풍속 : {{ weatherData['풍속'] }} m/s</li>
                 </ul>
             </div>
           </div>
@@ -174,16 +174,18 @@
                   <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
               </div>
           </div>
-
           <div class="row">
             <!-- plot 그래프 -->
-          <div class="col">
+            <div class="col">
+                <button class="badge badge-pill badge-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 높게 나온 수치를 의미합니다.">최대</button>
+                <button class="badge badge-pill badge-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초에 계측기를 설치할 때의 고정된 측정값입니다. : 실측값">초기측정값</button>
+                <button class="badge badge-pill badge-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 낮게 나온 수치를 의미합니다.">최소</button>
 {#            <div id='box-lan'></div>#}
-              <div id="plot" style="width: 500px; height: 400px;"></div>
-          </div>
+              <div id="plot-lat" style="width: 500px; height: 400px;"></div>
+            </div>
 
-        <!-- 위도 그래프 & 실시간 비교 테이블 -->
-        <div class="col">
+              <!-- 위도 그래프 & 실시간 비교 테이블 -->
+             <div class="col">
           <div>
             <canvas id="myChart" class="lt_graph"></canvas>
           </div>
@@ -220,13 +222,37 @@
 
       <!-- 경도 -->
       <div class="row">
-        <h5>경도 <i class="bi bi-bar-chart-line"></i></h5>
 
-        <div class="col">
-            <div id='box-lon'><!-- Plotly chart will be drawn inside this DIV --></div>
+
+        <div class="row justify-content-start">
+              <div class="col">
+                  <h5>경도 <i class="bi bi-bar-chart-line"></i></h5>
+              </div>
+              <div class="col-12">
+                  <button>1시간</button>
+                  <button>하루</button>
+                  <button>일주일</button>
+                  <button>한달</button>
+                  기간선택
+                  <br>
+
+                  <label for="start">Start date:</label>
+                  <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+
+                  <label for="start">End date:</label>
+                  <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+              </div>
+          </div>
+
+
+        <div class="row">
+            <div class="col">
+                <button class="badge badge-pill badge-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 높게 나온 수치를 의미합니다.">최대</button>
+                <button class="badge badge-pill badge-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초에 계측기를 설치할 때의 고정된 측정값입니다. : 실측값">초기측정값</button>
+                <button class="badge badge-pill badge-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 낮게 나온 수치를 의미합니다.">최소</button>
+              <div id="plot-lon" style="width: 500px; height: 400px;"></div>
         </div>
-
-        <div class="col">
+            <div class="col">
         <!--경도 그래프-->
           <div>
             <canvas id="myChart2" class="lon_graph"></canvas>
@@ -256,18 +282,46 @@
           </div>
         </div>
         </div>
+        </div>
+
+
+
       </div>
 
       <hr>
 
       <!-- 고도 -->
       <div class="row">
-        <h5>고도 <i class="bi bi-bar-chart-line"></i></h5>
-          <!-- box plot -->
-        <div class="col">
-            <div id='box-h'></div>
-        </div>
-        <div class="col">
+          <!-- box plot날짜선택 -->
+        <div class="row justify-content-start">
+              <div class="col">
+                  <h5>경도 <i class="bi bi-bar-chart-line"></i></h5>
+              </div>
+              <div class="col-12">
+                  <button>1시간</button>
+                  <button>하루</button>
+                  <button>일주일</button>
+                  <button>한달</button>
+                  기간선택
+                  <br>
+
+                  <label for="start">Start date:</label>
+                  <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+
+                  <label for="start">End date:</label>
+                  <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+              </div>
+          </div>
+        <div class="row">
+                <!-- box plot -->
+                <div class="col">
+                    <button class="badge badge-pill badge-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 높게 나온 수치를 의미합니다.">최대</button>
+                <button class="badge badge-pill badge-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초에 계측기를 설치할 때의 고정된 측정값입니다. : 실측값">초기측정값</button>
+                <button class="badge badge-pill badge-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="최초 안정된 환경에서 계측기를 설치하여 측정된 값들 중 가장 낮게 나온 수치를 의미합니다.">최소</button>
+                  <div id="plot-height" style="width: 500px; height: 400px;"></div>
+                </div>
+
+                <div class="col">
             <!-- 고도 그래프(실시간)-->
             <div>
                 <canvas id="myChart3" class="height_graph"></canvas>
@@ -294,8 +348,12 @@
             </tbody>
           </table>
         </div>
-        </div>
+        </div></div>
       </div>
+
+
+
+
 {#      <h4>기간 선택</h4>#}
       <!--계측기 날싸 선택 값 ( from to end )-->
 {#      <div class="row">#}
@@ -315,33 +373,48 @@
 {#          </div>#}
 {#        </div>#}
 {#      </div>#}
-
+        {% for data in boxplotData['boxplot_data'] %}
+            <meta id="my-data-{{ data['value'] }}" data-name="{{ data['value'] }}" data-other="{{ data['data'] }}">
+        {% endfor %}
     </main>
 
-    
+{#    <meta id="my-data" data-name="{{name}}" data-other="{{other}}">#}
+{#    <meta id="my-data" data-name="{{name}}" data-other="{{other}}">#}
+{#    <meta id="my-data" data-name="{{name}}" data-other="{{other}}">#}
+
+
   </div> 
 </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
     <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-bundle.min.js"></script>
     <script src="{{url_for('static', filename='assets/dist/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{url_for('static', filename='assets/dashboard/dashboard.js')}}"></script>
     <script src="{{ url_for('static', filename='assets/dist/js/device.js')}}"></script>
     <script type="text/javascript">
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 
 
+
+        var dataList = {{ boxplotData['boxplot_data']|tojson }};
         var data = [
-        {x: 'Ex.1', low: 20, q1: 26, median: 27, q3: 32, high: 38, outliers: [50, 52]},
-        {x: 'Ex.2', low: 24, q1: 28, median: 32, q3: 38, high: 42, outliers: [48]},
-        {x: 'Ex.3', low: 30, q1: 42, median: 62, q3: 73, high: 88, outliers: [32, 29, 106]},
-        {x: 'Ex.4', low: 52, q1: 59, median: 65, q3: 74, high: 83, outliers: [91]},
-        {x: 'Ex.5', low: 45, q1: 54, median: 66, q3: 81, high: 97, outliers: [110]},
-        {x: 'Ex.6', low: 27, q1: 36, median: 69, q3: 85, high: 100, outliers: [110, 115, 32]}
-    ];
+            {x: '2021-05-25', low: 20, q1: 26, median: 27, q3: 32, high: 38, outliers: []},
+            {x: '2021-05-26', low: 24, q1: 28, median: 32, q3: 38, high: 42, outliers: []},
+            {x: '2021-05-27', low: 30, q1: 42, median: 62, q3: 73, high: 88, outliers: []},
+            {x: '2021-05-28', low: 52, q1: 59, median: 65, q3: 74, high: 83, outliers: []},
+            {x: '2021-05-29', low: 45, q1: 54, median: 66, q3: 81, high: 97, outliers: []},
+            {x: '2021-05-30', low: 27, q1: 36, median: 69, q3: 85, high: 100, outliers: []},
+            {x: '2021-05-31', low: 27, q1: 36, median: 69, q3: 85, high: 100, outliers: []}
+        ];
         // plot 에 필요한 데이터를 받아옵니다. 후 처리는 render_plot 에서 시행합니다.
-        render_plot(data)
-
+        render_plot(dataList[0]['data'], 'plot-lat', 'Box Chart : 위도', "측정 기간", "위도", 3733.6456, 3733.6469, 3733.646) // 위도
+        render_plot(dataList[1]['data'], 'plot-lon', 'Box Chart : 경도', "측정 기간", "경도", 12659.6088, 12659.6106, 12659.6092) // 경도
+        render_plot(dataList[2]['data'], 'plot-height', 'Box Chart : 고도', '측정 기간', '고도', 69.1, 73.1, 70) // 고도
 
     </script>
   <script>
