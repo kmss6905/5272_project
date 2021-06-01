@@ -1,0 +1,58 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
+</head>
+<body>
+
+    <div id="log_container">
+
+    </div>
+    <script>
+        var wsbroker = location.hostname;  // mqtt websocket enabled broker
+        var wsport = 15675; // port for above
+        var client = new Paho.MQTT.Client(wsbroker, wsport, "/ws",
+        "myclientid_" + parseInt(Math.random() * 100, 10));
+        client.onConnectionLost = function (responseObject){
+            console.log("connection lost - " + responseObject.errorMessage);
+        };
+
+        client.onMessageArrived = function (message) {
+            console.log("RECEIVE ON " + message.destination  + " payload " + message.payloadString);
+            renderData(message);
+        };
+
+        var options = {
+            timeout: 3,
+            keepAliveInterval: 30,
+            onSuccess: function (message) {
+                console.log(message)
+                client.subscribe("test", {qos: 1})
+            },
+            onFailure: function (message) {
+                console.log("CONNECTION FAILURE - " + message.errorMessage)
+            }
+        };
+
+        if(location.protocol == "https:"){
+          options.useSSL = true;
+        }
+
+        client.connect(options);
+        console.log("CONNECT TO " + wsbroker + ":" + wsport);
+        if(client.isConnected()){
+            console.log(" conneciton success")
+        }
+
+        function renderData(message) {
+            const log_container = document.querySelector('#log_container')
+            const h4 = document.createElement('h4');
+            h4.innerText = message.payloadString;
+            log_container.appendChild(h4);
+        }
+    </script>
+</body>
+</html>

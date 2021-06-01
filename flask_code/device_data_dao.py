@@ -114,6 +114,4 @@ def register_device_to_building(login_user_id,b_name,b_type,b_addr):
     conn.commit()
     conn.close()
 
-register_device_to_building(2,'춘천빌딩1',4,'강원도 춘천시 33')
-
 
