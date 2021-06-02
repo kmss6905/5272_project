@@ -35,7 +35,7 @@
   <body>
     
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-3 me-0 px-3" href="building_dashboard_all">GNSS 상시계측 시스템 &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <로그인 후 전체 메뉴 이용이 가능합니다> </a>  <!--col-lg-2를 search 없애면서 3으로 늘림-->
+  <a class="navbar-brand col-md-3 col-lg-3 me-0 px-3" href="building_dashboard_all">GNSS 상시계측 시스템 </a>  <!--col-lg-2를 search 없애면서 3으로 늘림-->
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -58,28 +58,21 @@
 
         <ul class="nav flex-column">
 
-          <!-- 모든 사용자의 총 건축물 대시보드 화면으로 연결 (현 페이지)-->
+          <!-- 총 건축물 대시보드 화면으로 연결 (현 페이지)-->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="all_dashboard">
+
+              Every Structure Dashboard
+            </a>
+          </li>
+
+          <!-- 사용자의 총 건축물 대시보드 화면으로 연결 -->
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="index">
 
-              Structure Dashboard
+              My Structure Dashboard
             </a>
           </li>
-
-          <!-- 로그인x버전 페이지여서 사이드바 활용하지 못하도록 href 연결 안함 -->
-          <li class="nav-item">
-            <a class="nav-link">
-
-              Structure Info
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link">
-
-              Device Info
-            </a>
-          </li>
-        </ul>
 
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
           <span>User</span>
@@ -104,6 +97,7 @@
             </a>
           </li>
 
+
         </ul>
       </div>
     </nav>
@@ -111,7 +105,7 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
+        <h1 class="h2">Dashboard</h1>  <h6>로그인 할 경우 맞춤형 상세정보를 확인 가능합니다</h6>
       </div>
           <div class="row">
             <div class="col-xl-3 col-md-6">

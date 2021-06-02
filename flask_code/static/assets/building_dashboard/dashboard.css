@@ -52,7 +52,7 @@ body {
 }
 
 .sidebar .nav-link.active {
-  color: #007bff;
+  color: #163e68;
 }
 
 .sidebar .nav-link:hover .feather,
@@ -97,6 +97,11 @@ body {
 .form-control-dark:focus {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+/*구분 파티션*/
+.division{
+  padding-top: 30px;
 }
 
 
