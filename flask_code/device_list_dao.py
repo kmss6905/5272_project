@@ -11,7 +11,16 @@ def get_device_list():
     rows = cursor.fetchall()
     conn.close()
     return rows
-
+#해당 건물의 계측기 정보들
+def each_device_building2(login_user_id,building_name):
+    conn = db_conn.get_connection()
+    sql ='select * from device LEFT JOIN building ON device.building_name=building.building_name where device.device_user_id=%s and device.building_name = %s'
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    values = (login_user_id,building_name)
+    cursor.execute(sql,values)
+    infos = cursor.fetchall()
+    conn.close()
+    return infos
 
 if __name__ == "__main__":
     get_device_list()

@@ -43,6 +43,7 @@ def each_device_building(login_user_id,building_name):
     conn.close()
     return infos
 
+
 def each_device_info(device_id):
     conn = db_conn.get_connection()
     sql ='select device.device_location,user.user_phone_number,device.device_latitude,device.device_longitude,device.device_height from device inner join user on user.user_id= device.device_user_id where device.device_id=%s'
