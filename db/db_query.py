@@ -62,7 +62,7 @@ def insert_ulsan():
     idx = 0
     dq_ulsan = []
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    my_socket.settimeout(15)  # 데이터 recv안될 때 60초정도는 기다리는 코드
+    my_socket.settimeout(15)  # 데이터 recv안될 때 15초정도는 기다리는 코드
     try:
         my_socket.connect((HOST,PORT))
         while 1:

@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g
 from device_data_dao import each_device_info
 from model.User import User
@@ -5,6 +7,10 @@ from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
 import device_data_dao
+import weather
+import box_plot
+
+
 
 
 # Flask 객체 인스턴스 생성
@@ -102,8 +108,25 @@ def building_page(building_name):
 @app.route('/building/<building_name>/<device_id>')
 def devices(building_name, device_id):
     print(building_name, device_id)
-    device_info = each_device_info('syntest1')
-    return render_template('device.html', device_info=device_info)
+    # 계측기 데이터
+    device_info = each_device_info("syntest1")
+    device_info[0]['device_name'] = device_id  # 계측기 이름 추가
+
+    # 날씨정보
+    weatherData = weather.get_weather("syntest1")
+    print(weatherData)
+    # boxplot 데이터
+    r = json.dumps(box_plot.plot("syntest1", 5))
+    boxplotData = json.loads(r)
+    print(boxplotData)
+
+
+    print(device_info)
+    # 실시간 데이터
+    return render_template('device.html',
+                           device_info=device_info[0],
+                           weatherData=weatherData,
+                           boxplotData=boxplotData)
 
 
 # 계측기 등록
@@ -127,4 +150,12 @@ def register_device():
 
 
 if __name__ == "__main__":
+    # print(each_device_info("syntest1"))
+    # print(type(each_device_info("syntest1")))
+    weatherData = weather.get_weather("syntest1")
+    # print(weatherData)
+    print(box_plot.plot("syntest1", 5))
+    r = json.dumps(box_plot.plot("syntest1", 5))
+    loaded_r = json.loads(r)
+    print(loaded_r)
     app.run(host="localhost", port=3000, debug=True)
