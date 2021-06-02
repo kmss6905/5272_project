@@ -65,48 +65,38 @@
     
             <ul class="nav flex-column">
               
-              <!-- 사용자의 총 건축물 대시보드 화면으로 연결 -->
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="building_dashboard">
-    
-                  Structure Dashboard
-                </a>
-              </li>
-    
-              <!-- 사용자의 특정 건축물 정보 화면으로 연결 -->
-              <li class="nav-item">
-                <a class="nav-link" href="building">
-    
-                  Structure Info
-                </a>
-              </li>
-    
-              <!-- 사용자의 특정 계측기 정보 화면으로 연결-->
-              <li class="nav-item">
-                <a class="nav-link" href="device">
-    
-                  Device Info
-                </a>
-              </li>
-            </ul>
-    
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>User</span>
-              <a class="link-secondary" aria-label="Add a new report">
-                <span data-feather="plus-circle"></span>
-              </a>
-            </h6>
-            <ul class="nav flex-column mb-2">
-    
-              <!-- 계측기 등록하는 화면으로 연결 (현 페이지) -->
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="register">
-                  <span data-feather="file-text"></span>
-                  계측기 등록하기
-                </a>
-              </li>
-    
+              <!-- 총 건축물 대시보드 화면으로 연결-->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="all_dashboard">
+
+              Every Structure Dashboard
+            </a>
+          </li>
+
+          <!-- 사용자의 총 건축물 대시보드 화면으로 연결 (현 페이지) -->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="index">
+
+              My Structure Dashboard
+            </a>
+          </li>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <span>User</span>
+          <a class="link-secondary" aria-label="Add a new report">
+            <span data-feather="plus-circle"></span>
+          </a>
+        </h6>
+        <ul class="nav flex-column mb-2">
+
+          <!-- 계측기 등록하는 화면으로 연결-->
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="register">
+              <span data-feather="file-text"></span>
+              계측기 등록하기
+            </a>
+          </li>
             </ul>
           </div>
         </nav>
@@ -115,7 +105,7 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">계측기 등록</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
+        <!-- <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
@@ -126,7 +116,7 @@
             <span data-feather="calendar"></span>
             This week
           </button>
-        </div>
+        </div> -->
 
 
       </div>

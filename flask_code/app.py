@@ -2,14 +2,13 @@ import json
 
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g
 from device_data_dao import each_device_info
-from model.User import User
+from model.user import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
 import device_data_dao
 import weather
 import box_plot
-
 
 
 
@@ -53,6 +52,14 @@ def login():
                 session['user_id'] = user['id']  # user_id : 1 (로그인 유저의 고유의 아이디값 추가)
                 return redirect(url_for('index'))  # dashboard_building 페이지로 이동
         return render_template('signin.html')
+
+@app.route('/all_dashboard')
+def all_dashboard():
+    building_num_all = building_data_dao.get_all_building() #건축물개수
+    device_num_all = device_data_dao.get_all_device() #계측기개수
+    building_info = building_data_dao.get_all_building_info() #이름종류주소개수이상여부
+    return render_template('building_dashboard_all.html', building_num_all=building_num_all, device_num_all=device_num_all, building_info=building_info)
+
 
 # 주희님 이제 경로가 변경되었습니다.
 # 로그인하고 들어오시면 아마 주소창이 /index로 변경되었을 겁니다.
