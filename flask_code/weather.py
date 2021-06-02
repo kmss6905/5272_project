@@ -29,7 +29,9 @@ def get_weather(deviceId: str):
     elif _hour == 0:
         h = str(_hour) + "000"
     else:
-        h = str(_hour) + "0"
+        h = str(_hour) + "00"
+
+    print(h)
 
     location = findLocationByDeviceId(deviceId)['device_location']  # find building location
     if location == "서울특별시 중구 퇴계로36길 2":
