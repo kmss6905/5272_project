@@ -85,10 +85,10 @@ def building_page(building_name):
         return redirect(url_for('index'))  # 이 경우 index() 라우팅으로 이동 -> building_dashboard.html 로 이동
 
     if 'user_id' in session:  # 로그인 했다면
-
+        a = device_data_dao.all_device_info()
         device_list = device_list_dao.each_device_building2(g.user.id, building_name)
         # building_name 을 받아 추가적인 데이터를 building_page.html 에 필요한 데이터를 넘기면 됩니다.
-        return render_template('building_page.html', device_list=device_list, building_name = building_name)  # 정상적인 building_page.html 과 데이터 반환
+        return render_template('building_page.html', device_list=device_list, building_name = building_name, a = a)  # 정상적인 building_page.html 과 데이터 반환
     else:  # 로그인하지 않은 유저라면
         flash('회원만 접근 가능합니다')
         return render_template('signin.html')  # 로그인화면으로 이동합니다.
