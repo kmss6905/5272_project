@@ -1,15 +1,16 @@
 import json
 
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g,make_response
 from device_data_dao import each_device_info
-from model.user import User
+from Model.User import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
 import device_data_dao
 import weather
 import box_plot
-
+from datetime import datetime, timedelta
+# import redis
 
 
 # Flask 객체 인스턴스 생성
@@ -155,6 +156,19 @@ def register_device():
 
     return render_template('register_form.html')
 
+# @app.route('/tf/<device_id>')  # highchart 실시간 그래프 그리기
+# def tf():
+#     tf = True
+#     t_date = datetime.today()
+#     t_date_minus = t_date - timedelta(seconds=10)
+#     rd = redis.StrictRedis(host='localhost', port=6379, db=0) # redis 접속
+#     resultData = rd.get('dict')
+#     resultData = resultData.decode('utf-8')
+#     result = json.loads(resultData)
+#     data = [time()*1000,float(result['lat'])/100]
+#     response = make_response(json.dumps(data))
+#     response.content_type = 'application/json'
+#     return response
 
 if __name__ == "__main__":
     # print(each_device_info("syntest1"))
