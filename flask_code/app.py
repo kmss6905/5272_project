@@ -1,8 +1,10 @@
 import json
+from time import time
 
+import redis
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g,make_response
 from device_data_dao import each_device_info
-from Model.User import User
+from model.user import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
@@ -169,6 +171,42 @@ def register_device():
 #     response = make_response(json.dumps(data))
 #     response.content_type = 'application/json'
 #     return response
+
+
+
+# 비동기로 해당 api 로 요청합니다. / 최초 페이지 건축물 위험 유무 상태 보여주는 부분
+# 예시 : /api/building/충무로영상센터/status <-- 요청 형식
+# 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
+@app.route('/api/building/<buldingName>/status', methods=['GET'])
+def getWarnDataFrom(buldingName):
+    sample = {'building_name': buldingName, 'is_warn': "정상"}
+    return sample
+
+
+# 비동기로 해당 api 를 요청합니다. / 개별 건축물화면에서 계측기 위험유무 상태 보여주는 부분
+# 예시 : /api/building/충무로영상센터/syntest1/status <-- 요청 형식
+# 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
+@app.route('/api/building/<buldingName>/<deviceName>/status', methods=[ 'GET'] )
+def getWarnDataFromDevice(deviceName, buldingName):
+    sample = {'device_name': deviceName, 'is_warn': "정상"}
+    return sample
+
+
+@app.route('/api/live/<deviceName>/<value>', methods=['GET'])
+def getliveData(deviceName, value):
+    print("계측기이름 : " + deviceName + " / 게측값 : "  +value)
+    t_date = datetime.today()
+    t_date_minus = t_date - timedelta(seconds=10)
+    rd = redis.StrictRedis(host='localhost', port=6379, db=0) # redis 접속
+    resultData = rd.get('dict')
+    resultData = resultData.decode('utf-8')
+    result = json.loads(resultData)
+    data = [time()*1000,float(result['lat'])/100]
+    response = make_response(json.dumps(data))
+    response.content_type = 'application/json'
+    return response
+
+
 
 if __name__ == "__main__":
     # print(each_device_info("syntest1"))
