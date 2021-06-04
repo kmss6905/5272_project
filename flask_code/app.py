@@ -1,10 +1,11 @@
 import json
 from time import time
 
+import pika
 import redis
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g,make_response
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g,make_response,Response
 from device_data_dao import each_device_info
-from model.user import User
+from Model.User import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
@@ -143,7 +144,6 @@ def devices(building_name, device_id):
 @app.route('/register',methods = ['GET','POST'])
 def register_device():
 
-
     if request.method == 'POST':
         #클라이언트로 부터 받은 정보
         login_user_id = request.form['login_user_id']
@@ -187,24 +187,49 @@ def getWarnDataFrom(buldingName):
 # 예시 : /api/building/충무로영상센터/syntest1/status <-- 요청 형식
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
 @app.route('/api/building/<buldingName>/<deviceName>/status', methods=[ 'GET'] )
-def getWarnDataFromDevice(deviceName, buldingName):
-    sample = {'device_name': deviceName, 'is_warn': "정상"}
+def getWarnDataFromDevice(buldingName,device_id):
+    sample = {'device_id': device_id, 'is_warn': "정상"}
     return sample
 
 
-@app.route('/api/live/<deviceName>/<value>', methods=['GET'])
-def getliveData(deviceName, value):
-    print("계측기이름 : " + deviceName + " / 게측값 : "  +value)
-    t_date = datetime.today()
-    t_date_minus = t_date - timedelta(seconds=10)
-    rd = redis.StrictRedis(host='localhost', port=6379, db=0) # redis 접속
-    resultData = rd.get('dict')
-    resultData = resultData.decode('utf-8')
-    result = json.loads(resultData)
-    data = [time()*1000,float(result['lat'])/100]
-    response = make_response(json.dumps(data))
-    response.content_type = 'application/json'
-    return response
+
+def event_stream(device_id):
+    credentials = pika.PlainCredentials(username='syntest',password='syntest')
+    connection = pika.BlockingConnection(pika.ConnectionParameters('211.62.179.66',
+                                    credentials=credentials)) # rabbit mq 접속
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange=device_id, exchange_type='direct')
+    result = channel.queue_declare(queue='',exclusive=True) # consumer가 disconnect될 동시에 해당 queue도 자동으로 삭제
+    queue_name = result.method.queue
+
+    channel.queue_bind(queue=queue_name,exchange=device_id,routing_key=device_id)
+    for method_frame, properties, body in channel.consume(queue=queue_name):
+        result = []
+        result.append(str(body).split(',')[1])
+        result.append(str(body).split(',')[2])
+        return result
+
+@app.route('/stream')
+def stream():
+    return Response(event_stream('2223'),
+                          mimetype="text/event-stream")
+
+# 이부분을 바로위의 코드로 변경하면 될거같습니다
+# @app.route('/api/live/<deviceName>/<value>', methods=['GET'])
+# def getliveData(deviceName, value):
+#     print("계측기이름 : " + deviceName + " / 게측값 : "  +value)
+#     t_date = datetime.today()
+#     t_date_minus = t_date - timedelta(seconds=10)
+#     rd = redis.StrictRedis(host='localhost', port=6379, db=0) # redis 접속
+#     resultData = rd.get('dict')
+#     resultData = resultData.decode('utf-8')
+#     result = json.loads(resultData)
+#     data = [time()*1000,float(result['lat'])/100]
+#     response = make_response(json.dumps(data))
+#     response.content_type = 'application/json'
+#     return response
+
 
 
 

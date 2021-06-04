@@ -51,8 +51,8 @@ def send(device_id):
                 data = my_socket.recv(1024)
                 # 데이터 파싱 부분
                 data = str(data).split(',')
-                if len(data) >18:
-                    send(device_id)
+                # if len(data) >18:
+                #     send(device_id)
                 id = data[1] # 계측기 번호
                 time = data[3] # 계측 시간
                 if int(time[:2])+9 >24:
@@ -66,7 +66,7 @@ def send(device_id):
                 geoid_height = data[13] # geoid_height
                 data_list = [id,time,latitude,longitude,height,geoid_height]
                 data_join = ','.join(data_list)
-
+                print(data_join)
                 channel.basic_publish(exchange=device_id, routing_key=id, body=data_join) # rabbit mq 에 데이터 pub
                 print(" [x] send ")
     except socket.timeout:
@@ -74,7 +74,7 @@ def send(device_id):
         print('Data receive Error')
         return 
 
-send('syntest1')
+send('2223')
 
 # # 모든 계측기의 device_id를 가져오기
 # def all_device_id():

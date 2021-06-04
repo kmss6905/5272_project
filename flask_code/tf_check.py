@@ -4,22 +4,69 @@ from time import time
 from datetime import datetime, timedelta
 import redis
 import json
-# 개별 계측기별로 tf
-def warning_tf():
-    tf = True
-    t_date = datetime.today()
-    t_date_minus = t_date - timedelta(seconds=10)
+import pandas as pd
 
-    
-    return 
+# 건물별 이상여부
+def warning_building(building_name):
+    conn = db_conn.get_connection()
+    sql = 'select building_tf from building where building_name = %s'
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute(sql,building_name)
+    rows = cursor.fetchall()
+    conn.close()
+    result = {
+        "building_name":building_name,
+        "is_warn" : rows[0]['building_tf']
+    }
+    return result
+# return 요청 : /api/building/{building_name}/status -> {"building_name":'충무로영상센터',"building_tf":'정상'}
+# print(warning_building('충무로영상센터'))
 
-    # 요청 : /api/{충무로 ... }/ systest1 / status -> { "device" :"syntest1", "is_warn" : "정상" }
+# 계측기별 이상여부
+def warning_device(building_name,device_id):
+    tf = "정상"
+    # t_date = datetime.today()
+    # t_date_minus = t_date - timedelta(minutes=10)
+    t_date = datetime(2021,6,4).date()
+    t_date_minus = t_date - timedelta(days=1)
+    conn = db_conn.get_connection()
+    sql_th = 'select device_criteria_latitude,device_criteria_longitude,device_criteria_height,device_criteria_latitude_min,device_criteria_longitude_min,device_criteria_height_min from device where device_id =%s'
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute(sql_th,device_id)
+    threshold = cursor.fetchall()
+    df_th = pd.DataFrame(data={
+        'lat':[threshold[0]['device_criteria_latitude'],threshold[0]['device_criteria_latitude_min']],
+        'long':[threshold[0]['device_criteria_longitude'],threshold[0]['device_criteria_longitude_min']],
+        'height':[threshold[0]['device_criteria_height'],threshold[0]['device_criteria_height_min']]
+    }) 
+    if device_id =='syntest1':
+        sql = 'select MAX(Latitude)/100,MAX(Longitude)/100,MAX(Height),MIN(Latitude)/100,MIN(Longitude)/100,MIN(Height) from rawdata_chung where (device_id = %s) and (Create_time between %s and %s)'
+    else:
+        sql = 'select MAX(Latitude)/100,MAX(Longitude)/100,MAX(Height),MIN(Latitude)/100,MIN(Longitude)/100,MIN(Height) from rawdata_ulsan where (device_id = %s) and (Create_time between %s and %s)'
+    values = (device_id,t_date_minus,t_date)
+    cursor.execute(sql,values)
+    tf_data = cursor.fetchall()
+    df = pd.DataFrame(data={
+        'lat':[tf_data[0]['MAX(Latitude)/100'],tf_data[0]['MIN(Latitude)/100']],
+        'long':[tf_data[0]['MAX(Longitude)/100'],tf_data[0]['MIN(Longitude)/100']],
+        'height':[tf_data[0]['MAX(Height)'],tf_data[0]['MIN(Height)']]
+    }) 
 
-# 건물별로 tf 
-def building_warning():
-    return
-# /api/building/{building_name}/status -> {"building_name":'충무로',"is_warn":'정상'}
-
+    tf_decide = ((df_th-df)['lat'][0]>0 or (df_th-df)['lat'][0]<0) and ((df_th-df)['long'][0]>0 or (df_th-df)['long'][0]<0) and ((df_th-df)['height'][0]>0 or (df_th-df)['height'][0]<0) 
+    is_warn = "정상" if tf_decide else "이상 발생"
+    result = {
+        'device_id' : device_id,
+        'is_warn' : is_warn
+    }
+    if not tf_decide:
+        sql_up = 'UPDATE building SET building_tf= %s WHERE building_name=%s'
+        values = (is_warn,building_name)
+        cursor.execute(sql_up,values)
+        conn.commit()
+    conn.close()
+    return result
+#     # return 요청 : /api/{충무로 ... }/ systest1 / status -> { "device" :"syntest1", "device_tf" : "정상" }
+# print(warning_device('울산','2223'))
 
 
 # def insert_dd(device_id):

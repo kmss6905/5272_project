@@ -116,3 +116,5 @@ def register_device_to_building(login_user_id,b_name,b_type,b_addr):
     conn.close()
 
 
+
+
