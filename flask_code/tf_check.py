@@ -5,11 +5,12 @@ from datetime import datetime, timedelta
 import redis
 import json
 import pandas as pd
+from twilio.rest import Client
 
 # 건물별 이상여부
 def warning_building(building_name):
     conn = db_conn.get_connection()
-    sql = 'select building_tf from building where building_name = %s'
+    sql = 'select building.building_tf,user.user_phone_number from building inner join user on building.building_user_id=user.user_id where building.building_name = %s '
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute(sql,building_name)
     rows = cursor.fetchall()
@@ -18,9 +19,20 @@ def warning_building(building_name):
         "building_name":building_name,
         "is_warn" : rows[0]['building_tf']
     }
+    if rows[0]['building_tf'] =='이상발생':
+
+        account_sid = 'AC3b9a05724c78abd037b899eff26f9358'
+        auth_token = 'c1f1695ddbcff67c4f5dd2929a425259'
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            to=rows[0]['user_phone_number'], 
+            from_="+18595349674",
+            body="건축물 이상 발생!!")
     return result
 # return 요청 : /api/building/{building_name}/status -> {"building_name":'충무로영상센터',"building_tf":'정상'}
-# print(warning_building('충무로영상센터'))
+
+# warning_building('충무로영상센터')
 
 # 계측기별 이상여부
 def warning_device(building_name,device_id):
@@ -53,7 +65,7 @@ def warning_device(building_name,device_id):
     }) 
 
     tf_decide = ((df_th-df)['lat'][0]>0 or (df_th-df)['lat'][0]<0) and ((df_th-df)['long'][0]>0 or (df_th-df)['long'][0]<0) and ((df_th-df)['height'][0]>0 or (df_th-df)['height'][0]<0) 
-    is_warn = "정상" if tf_decide else "이상 발생"
+    is_warn = "정상" if tf_decide else "이상발생"
     result = {
         'device_id' : device_id,
         'is_warn' : is_warn

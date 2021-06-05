@@ -12,6 +12,7 @@ import device_list_dao
 import device_data_dao
 import weather
 import box_plot
+import tf_check
 from datetime import datetime, timedelta
 # import redis
 
@@ -177,17 +178,19 @@ def register_device():
 # 비동기로 해당 api 로 요청합니다. / 최초 페이지 건축물 위험 유무 상태 보여주는 부분
 # 예시 : /api/building/충무로영상센터/status <-- 요청 형식
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
-@app.route('/api/building/<buldingName>/status', methods=['GET'])
-def getWarnDataFrom(buldingName):
-    sample = {'building_name': buldingName, 'is_warn': "정상"}
+@app.route('/api/building/<buildingName>/status', methods=['GET'])
+def getWarnDataFrom(buildingName):
+    # tf_check.warning_building(buildingName) # 해당 api를 통해 sample과 같은 데이터 불러올 수 있고 만약 건축물의 is_warn이 "이상발생"이면 문자로 알람이 간다.
+    sample = {'building_name': buildingName, 'is_warn': "정상"}
     return sample
 
 
 # 비동기로 해당 api 를 요청합니다. / 개별 건축물화면에서 계측기 위험유무 상태 보여주는 부분
 # 예시 : /api/building/충무로영상센터/syntest1/status <-- 요청 형식
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
-@app.route('/api/building/<buldingName>/<deviceName>/status', methods=[ 'GET'] )
-def getWarnDataFromDevice(buldingName,device_id):
+@app.route('/api/building/<buildingName>/<deviceName>/status', methods=[ 'GET'] )
+def getWarnDataFromDevice(buildingName,device_id):
+    # tf_check.warning_device(buildingName,device_id) # 해당 api를 통해 sample과 같은 데이터가져오고 device가 이상이 있다면 해당 device에 해당되는 건축물의 is_warn이 "이상발생으로 바뀐다."
     sample = {'device_id': device_id, 'is_warn': "정상"}
     return sample
 
