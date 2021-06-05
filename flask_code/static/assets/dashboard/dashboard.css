@@ -100,21 +100,21 @@ body {
 }
 
 
-/* 표에 쓰이는 건강도 색깔 사각형*/
-.safe{
-  width : 80px;
-  height : 25px;
-  border-radius: 10px;
-  background : rgb(15, 189, 15);
-  font-size : 15px;
-  text-align:center;
-}
+/*!* 표에 쓰이는 건강도 색깔 사각형*!*/
+/*.safe{*/
+/*  width : 80px;*/
+/*  height : 25px;*/
+/*  border-radius: 10px;*/
+/*  background : rgb(15, 189, 15);*/
+/*  font-size : 15px;*/
+/*  text-align:center;*/
+/*}*/
 
-.danger{
-  width : 80px;
-  height : 25px;
-  border-radius: 10px;
-  background :rgb(226, 66, 66);
-  font-size : 15px;
-  text-align:center;
-}
+/*.danger{*/
+/*  width : 80px;*/
+/*  height : 25px;*/
+/*  border-radius: 10px;*/
+/*  background :rgb(226, 66, 66);*/
+/*  font-size : 15px;*/
+/*  text-align:center;*/
+/*}*/
