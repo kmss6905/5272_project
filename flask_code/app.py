@@ -3,9 +3,10 @@ from time import time
 
 import pika
 import redis
-from flask import Flask, render_template, request, flash, redirect, url_for, session, g,make_response,Response
+from flask import Flask, render_template, request, flash, redirect, url_for, session, g, make_response, Response
 from device_data_dao import each_device_info
-from Model.User import User
+from flask_code.sql_loop import pick_sql_data
+from model.user import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
@@ -58,12 +59,14 @@ def login():
                 return redirect(url_for('index'))  # dashboard_building 페이지로 이동
         return render_template('signin.html')
 
+
 @app.route('/all_dashboard')
 def all_dashboard():
-    building_num_all = building_data_dao.get_all_building() #건축물개수
-    device_num_all = device_data_dao.get_all_device() #계측기개수
-    building_info = building_data_dao.get_all_building_info() #이름종류주소개수이상여부
-    return render_template('building_dashboard_all.html', building_num_all=building_num_all, device_num_all=device_num_all, building_info=building_info)
+    building_num_all = building_data_dao.get_all_building()  # 건축물개수
+    device_num_all = device_data_dao.get_all_device()  # 계측기개수
+    building_info = building_data_dao.get_all_building_info()  # 이름종류주소개수이상여부
+    return render_template('building_dashboard_all.html', building_num_all=building_num_all,
+                           device_num_all=device_num_all, building_info=building_info)
 
 
 # 주희님 이제 경로가 변경되었습니다.
@@ -77,18 +80,20 @@ def index():
          로그인 하면 g.user 객체를 활용하시면 됩니다.로그인한 유저의 고유 아이디 값 입니다. 그 밖에 이메일 등등의 정보도 있으니 자세한 건
          model 폴더에 user.py 참조하시면 됩니다.
         '''
-        building_num = building_data_dao.get_user_building(g.user.id) #건축물개수
-        device_num = device_data_dao.get_my_device(g.user.id) #계측기개수
-        building_map = building_data_dao.get_user_building_info(g.user.id) #이름종류주소계측기개수
-        #decide_criteria = building_dat_dao.decide_criteria(g.user.id) #이상여부
-        return render_template('building_dashboard.html', building_num=building_num, device_num=device_num, building_map=building_map)  #building_table=building_table, decide_criteria=decide_criteria
+        building_num = building_data_dao.get_user_building(g.user.id)  # 건축물개수
+        device_num = device_data_dao.get_my_device(g.user.id)  # 계측기개수
+        building_map = building_data_dao.get_user_building_info(g.user.id)  # 이름종류주소계측기개수
+        # decide_criteria = building_dat_dao.decide_criteria(g.user.id) #이상여부
+        return render_template('building_dashboard.html', building_num=building_num, device_num=device_num,
+                               building_map=building_map)  # building_table=building_table, decide_criteria=decide_criteria
 
-         # 로그인 했다면 해당 페이지 반환
+        # 로그인 했다면 해당 페이지 반환
     else:
-        building_num_all = building_data_dao.get_all_building() #건축물개수
-        device_num_all = device_data_dao.get_all_device() #계측기개수
-        building_info = building_data_dao.get_all_building_info() #이름종류주소개수이상여부
-        return render_template('building_dashboard_all.html', building_num_all=building_num_all, device_num_all=device_num_all, building_info=building_info)
+        building_num_all = building_data_dao.get_all_building()  # 건축물개수
+        device_num_all = device_data_dao.get_all_device()  # 계측기개수
+        building_info = building_data_dao.get_all_building_info()  # 이름종류주소개수이상여부
+        return render_template('building_dashboard_all.html', building_num_all=building_num_all,
+                               device_num_all=device_num_all, building_info=building_info)
         # 로그인 하지 않았다면 해당 페이지로 이동합니다.
 
 
@@ -97,7 +102,6 @@ def index():
 # 이 부분 변경되었습니다.
 @app.route('/building/<building_name>')
 def building_page(building_name):
-
     building_name = building_name
     if building_name is None:
         return redirect(url_for('index'))  # 이 경우 index() 라우팅으로 이동 -> building_dashboard.html 로 이동
@@ -106,7 +110,8 @@ def building_page(building_name):
         a = device_data_dao.all_device_info()
         device_list = device_list_dao.each_device_building2(g.user.id, building_name)
         # building_name 을 받아 추가적인 데이터를 building_page.html 에 필요한 데이터를 넘기면 됩니다.
-        return render_template('building_page.html', device_list=device_list, building_name = building_name, a = a)  # 정상적인 building_page.html 과 데이터 반환
+        return render_template('building_page.html', device_list=device_list, building_name=building_name,
+                               a=a)  # 정상적인 building_page.html 과 데이터 반환
     else:  # 로그인하지 않은 유저라면
         flash('회원만 접근 가능합니다')
         return render_template('signin.html')  # 로그인화면으로 이동합니다.
@@ -132,7 +137,6 @@ def devices(building_name, device_id):
     boxplotData = json.loads(r)
     print(boxplotData)
 
-
     print(device_info)
     # 실시간 데이터
     return render_template('device.html',
@@ -144,7 +148,6 @@ def devices(building_name, device_id):
 # 계측기 등록
 @app.route('/register',methods = ['GET','POST'])
 def register_device():
-
     if request.method == 'POST':
         #클라이언트로 부터 받은 정보
         login_user_id = request.form['login_user_id']
@@ -173,8 +176,6 @@ def register_device():
 #     response.content_type = 'application/json'
 #     return response
 
-
-
 # 비동기로 해당 api 로 요청합니다. / 최초 페이지 건축물 위험 유무 상태 보여주는 부분
 # 예시 : /api/building/충무로영상센터/status <-- 요청 형식
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
@@ -195,45 +196,52 @@ def getWarnDataFromDevice(buildingName,device_id):
     return sample
 
 
-
 def event_stream(device_id):
-    credentials = pika.PlainCredentials(username='syntest',password='syntest')
+    credentials = pika.PlainCredentials(username='syntest', password='syntest')
     connection = pika.BlockingConnection(pika.ConnectionParameters('211.62.179.66',
-                                    credentials=credentials)) # rabbit mq 접속
+                                                                   credentials=credentials))  # rabbit mq 접속
     channel = connection.channel()
 
     channel.exchange_declare(exchange=device_id, exchange_type='direct')
-    result = channel.queue_declare(queue='',exclusive=True) # consumer가 disconnect될 동시에 해당 queue도 자동으로 삭제
+    result = channel.queue_declare(queue='', exclusive=True)  # consumer가 disconnect될 동시에 해당 queue도 자동으로 삭제
     queue_name = result.method.queue
 
-    channel.queue_bind(queue=queue_name,exchange=device_id,routing_key=device_id)
+    channel.queue_bind(queue=queue_name, exchange=device_id, routing_key=device_id)
     for method_frame, properties, body in channel.consume(queue=queue_name):
+        # body : {'id': "b'syntest1", 'time': '2021-06-05 24:55:12', 'lat': '3733.6460175', 'long': '12659.6093979', 'height': '69.789'}
         result = []
         result.append(str(body).split(',')[1])
         result.append(str(body).split(',')[2])
-        return result
+        result.append(str(body).split(',')[3])
+        print(result)
+        value = float(str(body).split(',')[2]) * 0.01
+        _result = str(body).split(',')[1] + "_" + str(value)
+        yield u'data: {0}\n\n'.format(_result)
 
-@app.route('/stream')
-def stream():
-    return Response(event_stream('2223'),
-                          mimetype="text/event-stream")
+
+
+@app.route('/stream/<device_id>')
+def stream(device_id):
+    return Response(event_stream(device_id), mimetype="text/event-stream")
+
 
 # 이부분을 바로위의 코드로 변경하면 될거같습니다
-# @app.route('/api/live/<deviceName>/<value>', methods=['GET'])
-# def getliveData(deviceName, value):
-#     print("계측기이름 : " + deviceName + " / 게측값 : "  +value)
-#     t_date = datetime.today()
-#     t_date_minus = t_date - timedelta(seconds=10)
-#     rd = redis.StrictRedis(host='localhost', port=6379, db=0) # redis 접속
-#     resultData = rd.get('dict')
-#     resultData = resultData.decode('utf-8')
-#     result = json.loads(resultData)
-#     data = [time()*1000,float(result['lat'])/100]
-#     response = make_response(json.dumps(data))
-#     response.content_type = 'application/json'
-#     return response
-
-
+@app.route('/api/live/<deviceName>/<value>', methods=['GET'])
+def getliveData(deviceName, value):
+    # print("계측기이름 : " + deviceName + " / 게측값 : " + value)
+    # t_date = datetime.today()
+    # t_date_minus = t_date - timedelta(seconds=10)
+    # rd = redis.StrictRedis(host='localhost', port=6379, db=0)  # redis 접속
+    # resultData = rd.get('dict')
+    # resultData = resultData.decode('utf-8')
+    # result = json.loads(resultData)
+    # data = [time() * 1000, float(result['lat']) / 100]
+    # response = make_response(json.dumps(data))
+    # response.content_type = 'application/json'
+    print(deviceName, value)
+    _list = pick_sql_data(deviceName, value)
+    result = {'time': _list[0], 'value': _list[1]}
+    return result
 
 
 if __name__ == "__main__":
@@ -245,4 +253,4 @@ if __name__ == "__main__":
     r = json.dumps(box_plot.plot("syntest1", 5))
     loaded_r = json.loads(r)
     print(loaded_r)
-    app.run(host="localhost", port=3000, debug=True)
+    app.run(threaded=True, host="localhost", port=3000, debug=True)

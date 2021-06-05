@@ -1,3 +1,80 @@
+let chartLat;
+let chartLon;
+let chartHeight;
+const liveLatElement = document.getElementById('live_data_lat');
+const resultLatElement = document.getElementById('live_data_lat_difference')
+const liveLonElement = document.getElementById('live_data_lon');
+const resultLonElement = document.getElementById('live_data_lon_difference')
+const liveHeightElement = document.getElementById('live_data_height');
+const resultHeightElement = document.getElementById('live_data_height_difference')
+
+function sseStart(criteriaLat, criteriaLon, criteriaHeight){
+
+    var source = new EventSource("/stream");
+    source.onmessage = function(event) {
+        var x = (new Date()).getTime() // current time
+
+        if(chartLat != null && chartLon != null && chartHeight != null){
+            console.log(event.data)
+            _result_data = event.data.split('_')
+            var time = event.data.split('_')[0]
+            console.log(time)
+            console.log(typeof time)
+            var _result = time.split(' ')
+            console.log(_result[1])
+            var y = event.data.split('_')[1]
+            // var series = chartLat.series[0], sheift = series.data.length > 20; // shift if the series is longer than 20
+
+
+            chartLat.series[0].addPoint([x, parseFloat(y)]) // 위도
+
+            chartLon.series[0].addPoint([x, parseFloat(y)]) // 경도 ( 수정해야함 )
+            chartHeight.series[0].addPoint([x, parseFloat(y)]) // 고도 ( 수정해야함 )
+
+            renderTableData(parseFloat(y), criteriaLat) // 위도
+
+            renderTableData(parseFloat(y), criteriaLon) // 경도 ( 수정해야함 )
+            renderTableData(parseFloat(y), criteriaHeight) // 고도 ( 수정해야함 )
+        }
+    };
+}
+
+// 테이블 데이터에 데이터를 렌더링 합니다.
+function renderTableData(liveData, criteriaData, maxValue, minValue, value){
+    if(value == 'lat'){ // 위도
+        liveLatElement.innerText = liveData // 실시간 위도
+        resultLatElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        if(liveData > maxValue || liveData < minValue){ // 최대값보다 크거나 최소값 보다 작을 경우
+            liveLatElement.style.color = "#FF0000"; // red color code
+            resultLatElement.style.color = "#FF0000"; // red color code
+            resultLatElement.innerText = resultLatElement.innerText + " (정상범위 초과)"
+            window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 위도 ]");
+        }
+    }
+
+    if(value == 'lon'){
+        liveLonElement.innerText = liveData // 실시간 경도
+        resultLonElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        if(liveData > maxValue || liveData < minValue){ // 이상범위 밖
+            liveLonElement.style.color = "#FF0000"; // red color code
+            resultLonElement.style.color = "#FF0000"; // red color code
+            resultLonElement.innerText = resultLonElement.innerText + " (정상범위 초과)"
+            window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 경도 ]");
+        }
+    }
+
+    if(value == 'height'){
+        liveHeightElement.innerText = liveData // 실시간 고도
+        resultHeightElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        if(liveData > maxValue || liveData < minValue){ // 최대값보다 크거나 최소값 보다 작을 경우
+            liveHeightElement.style.color = "#FF0000"; // red color code
+            resultHeightElement.style.color = "#FF0000"; // red color code
+            resultHeightElement.innerText = resultLatElement.innerText + " (정상범위 초과)"
+            window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 고도 ]");
+        }
+    }
+}
+
 /**
  *
  * @param data(list)
@@ -5,18 +82,6 @@
  */
 function render_plot(data, elementName, title, xAxisName, yAxisName, min, max, absValue){
     data.reverse();  // 순서변경
-
-    // if(calculateFlag == 1){ // 여기가 동작을 안함.. 0.01을 곱한 결과값으로 바뀌지 않는다..
-    //       // * 10
-    //     for (let i = 0; i <data.length; i++) {
-    //         data[i]['low'] = data[i]['low'] * 0.01
-    //         data[i]['high'] = data[i]['high'] * 0.01
-    //         data[i]['q1'] = data[i]['q1'] * 0.01
-    //         data[i]['q3'] = data[i]['q3'] * 0.01
-    //         data[i]['median'] = data[i]['median'] * 0.01
-    //     }
-    // }
-
 
     //create area chart
     var chart = anychart.box(data);
@@ -98,30 +163,72 @@ function render_plot(data, elementName, title, xAxisName, yAxisName, min, max, a
 
     //initiate chart drawing
     chart.draw();
-
-    // // show information when mouse is over a marker
-    // chart.listen("mouseOver", function (e) {
-    //     // var symbol = e.eventMarker.symbol;
-    //     // var description = e.eventMarker.description;
-    //     // var date = e.eventMarker.date;
-    //     console.log(e)
-    //     document.getElementById('information-lat').innerHTML = "heel";
-    //
-    //     // hide information when mouse leaves a marker
-    //     // chart.listen("eventMarkerMouseOut", function () {
-    //     //     document.getElementById(elementName).innerHTML = "";
-    //     // });
-    //     //
-    //     // // open a url when a marker is clicked on
-    //     // chart.listen("eventMarkerClick", function (e) {
-    //     //     var url = "https://www.google.ru/search?q=" +
-    //     //         e.eventMarker.description;
-    //     //     window.open(url, "_blank");
-    //     // });
-    // })
 }
 
+function renderLineGraph(elementName, title, yAxis, minRate, maxRate, absRate, deviceName){
+    // Create the chart
+    if(yAxis=="위도"){
+        chartLat = getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, deviceName)
+    } else if(yAxis=="경도"){
+        chartLon = getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, deviceName)
+    }else if(yAxis=="고도"){
+        chartHeight = getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, deviceName)
+    }
+}
 
-
+function getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, deviceName) {
+    return new Highcharts.stockChart(elementName, {
+            title: {
+                text: title
+            },
+            yAxis: {
+                minColor: 'green',
+                min: minRate,
+                max: maxRate,
+                title: {
+                    text: yAxis
+                },
+                plotLines: [{
+                   value: absRate,
+                   color: 'black',
+                   dashStyle: 'shortDash',
+                   width: 2,
+                   label: {
+                       text: '초기 측정치'
+                   }
+                }],
+                 plotBands: [{
+                    from: minRate,
+                    to: maxRate,
+                    color: 'rgba(68, 170, 213, 0.2)',
+                    label: {
+                        text: '정상범위'
+                    }
+               }]},
+            rangeSelector: {
+            buttons: [{
+              count: 1,
+              type: 'minute',
+              text: '1분'
+            }, {
+              count: 3,
+              type: 'minute',
+              text: '3분'
+            }, {
+              count: 5,
+              type: 'minute',
+              text: '5분'
+            }, {
+              type: 'all',
+              text: '전체'
+            }],
+            inputEnabled: true,
+            selected: 1
+          }, series: [{
+                name: yAxis,
+                data: []
+        }]
+    });
+}
 
 
