@@ -5,8 +5,8 @@ import pika
 import redis
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g, make_response, Response
 from device_data_dao import each_device_info
-from flask_code.sql_loop import pick_sql_data
-from model.user import User
+from sql_loop import pick_sql_data
+from model.User import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
@@ -150,7 +150,7 @@ def devices(building_name, device_id):
 def register_device():
     if request.method == 'POST':
         #클라이언트로 부터 받은 정보
-        login_user_id = request.form['login_user_id']
+        login_user_id = g.user.id
         b_name = request.form['b_name']
         b_type = request.form['b_type']
         b_addr = request.form['b_addr']
