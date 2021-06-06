@@ -33,6 +33,7 @@
 
 
     <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/building_dashboard/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/dashboard/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/dist/css/styles.css') }}">
   </head>
@@ -170,12 +171,9 @@
               <td> <a href="{{'/building/' + building_name + '/' + device['device_id'] }}">{{device['device_id']}}</a></td>
 
               <td>{{device['device_created']}}</td>
-              <td><div class="safe">정상</div></td>
+              <td><div id="warn_info_{{ device['device_id'] }}" class="safe">정상</div></td>
             </tr>
             {%endfor%}
-
-
-
           </tbody>
         </table>
       </div>
@@ -185,16 +183,57 @@
 
 
     <script src="{{url_for('static', filename='assets/dist/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
     <script src="{{url_for('static', filename='assets/dashboard/dashboard.js')}}"></script>
 
     <script src="{{url_for('static',filename='assets/dashboard/dashboard.js')}}"></script>
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1a2ff0e58b29e74620f8f0b8bdf5ab66&libraries=services,clusterer,drawing"></script>
-
         <!-- 지도 관련 자바스크립트-->
     <script src="{{url_for('static',filename='assets/dist/js/roadview.js')}}"></script>
+    <script type="text/javascript">
+        var deviceList = {{ device_list|tojson }}
+            // /api/building/<buildingName>/<deviceId>/status
+        console.log(deviceList)
+        for (let i = 0; i < deviceList.length; i++) {
+            console.log("1")
+            console.log(deviceList[i]['building_name'] + deviceList[i]['device_id'])
+            console.log("2")
+            requestData(deviceList[i]['building_name'], deviceList[i]['device_id'])
+        }
 
+        async function requestData(buildingName, deviceId){
+            var name = buildingName
+            var deid = deviceId
+
+            $.ajax({
+                url: '/api/building/' + name + '/' + deid + '/status',
+                success: function (data) {
+                    console.log(data)
+                    console.log("buldingname : " + name)
+                    console.log("deviceid " + deid)
+
+                    var id = "warn_info_" + String(deid)
+                    console.log("id : " + id)
+                    document.getElementById(id).innerText = data['is_warn']
+                    if(data['is_warn'] == '정상'){
+                        document.getElementById(id).classList.remove('danger')
+                        document.getElementById(id).classList.add('safe')
+                    }else{
+                        document.getElementById(id).classList.remove('safe')
+                        document.getElementById('warn_info_' + deviceId).classList.add('danger')
+                    }
+                    setTimeout(requestData(buildingName,deviceId), 3600000);
+                },
+                cache: false
+            })
+        }
+
+
+
+
+    </script>
 
   </body>
 </html>

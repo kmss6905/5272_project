@@ -181,19 +181,17 @@ def register_device():
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
 @app.route('/api/building/<buildingName>/status', methods=['GET'])
 def getWarnDataFrom(buildingName):
-    # tf_check.warning_building(buildingName) # 해당 api를 통해 sample과 같은 데이터 불러올 수 있고 만약 건축물의 is_warn이 "이상발생"이면 문자로 알람이 간다.
-    sample = {'building_name': buildingName, 'is_warn': "정상"}
-    return sample
+    # print(tf_check.warning_building(buildingName)) # 해당 api를 통해 sample과 같은 데이터 불러올 수 있고 만약 건축물의 is_warn이 "이상발생"이면 문자로 알람이 간다.
+    # sample = {'building_name': buildingName, 'is_warn': "정상"}
+    return tf_check.warning_building(buildingName)
 
 
 # 비동기로 해당 api 를 요청합니다. / 개별 건축물화면에서 계측기 위험유무 상태 보여주는 부분
 # 예시 : /api/building/충무로영상센터/syntest1/status <-- 요청 형식
 # 현재 샘플로 응답값을 실제로 보내주고 있습니다. 이것을 바탕으로 클라이언트에서 서버로 데이터 요청하는 부분을 구현하시면 될 거 같습니다.
-@app.route('/api/building/<buildingName>/<deviceName>/status', methods=[ 'GET'] )
-def getWarnDataFromDevice(buildingName,device_id):
-    # tf_check.warning_device(buildingName,device_id) # 해당 api를 통해 sample과 같은 데이터가져오고 device가 이상이 있다면 해당 device에 해당되는 건축물의 is_warn이 "이상발생으로 바뀐다."
-    sample = {'device_id': device_id, 'is_warn': "정상"}
-    return sample
+@app.route('/api/building/<buildingName>/<deviceId>/status', methods=[ 'GET'] )
+def getWarnDataFromDevice(buildingName,deviceId):
+    return tf_check.warning_device(buildingName, deviceId) # 해당 api를 통해 sample과 같은 데이터가져오고 device가 이상이 있다면 해당 device에 해당되는 건축물의 is_warn이 "이상발생으로 바뀐다."
 
 
 def event_stream(device_id):
@@ -228,16 +226,6 @@ def stream(device_id):
 # 이부분을 바로위의 코드로 변경하면 될거같습니다
 @app.route('/api/live/<deviceName>/<value>', methods=['GET'])
 def getliveData(deviceName, value):
-    # print("계측기이름 : " + deviceName + " / 게측값 : " + value)
-    # t_date = datetime.today()
-    # t_date_minus = t_date - timedelta(seconds=10)
-    # rd = redis.StrictRedis(host='localhost', port=6379, db=0)  # redis 접속
-    # resultData = rd.get('dict')
-    # resultData = resultData.decode('utf-8')
-    # result = json.loads(resultData)
-    # data = [time() * 1000, float(result['lat']) / 100]
-    # response = make_response(json.dumps(data))
-    # response.content_type = 'application/json'
     print(deviceName, value)
     _list = pick_sql_data(deviceName, value)
     result = {'time': _list[0], 'value': _list[1]}
@@ -247,10 +235,12 @@ def getliveData(deviceName, value):
 if __name__ == "__main__":
     # print(each_device_info("syntest1"))
     # print(type(each_device_info("syntest1")))
-    weatherData = weather.get_weather("syntest1")
+    # weatherData = weather.get_weather("syntest1")
     # print(weatherData)
-    print(box_plot.plot("syntest1", 5))
-    r = json.dumps(box_plot.plot("syntest1", 5))
-    loaded_r = json.loads(r)
-    print(loaded_r)
+    # print(box_plot.plot("syntest1", 5))
+    # r = json.dumps(box_plot.plot("syntest1", 5))
+    # loaded_r = json.loads(r)
+    print(getliveData('syntest1', 'long'))
+    print(tf_check.warning_building('충무로영상센터'))
+    print(tf_check.warning_building('울산'))
     app.run(threaded=True, host="localhost", port=3000, debug=True)

@@ -77,10 +77,9 @@ def warning_device(building_name,device_id):
         conn.commit()
     else:
         sql_up = 'UPDATE building SET building_tf= %s WHERE building_name=%s'
-        values = (is_warn,building_name)
-        cursor.execute(sql_up,values)
+        values = (is_warn, building_name)
+        cursor.execute(sql_up, values)
         conn.commit()
-    conn.close()
     return result
 #     # return 요청 : /api/{충무로 ... }/ systest1 / status -> { "device" :"syntest1", "device_tf" : "정상" }
 # print(warning_device('울산','2223'))

@@ -167,7 +167,7 @@
               {% if building['device_num'] == 4 %} <!--이상여부인데 현재 임의로 테스트 용으로 막 써놓음-->
                 <td> <div class="safe"> 정상 </div> </td>
               {% else %}
-                <td> <div class="danger"> 이상 발생 </div> </td>
+                <td> <div id="{{ building['building_name'] }}" class="danger"> 이상 발생 </div> </td>
               {% endif %}
               
             </tr>
@@ -191,6 +191,65 @@
         <!-- 지도 관련 자바스크립트-->
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1a2ff0e58b29e74620f8f0b8bdf5ab66&libraries=services,clusterer,drawing"></script>
         <script src="{{url_for('static',filename='assets/dist/js/map.js')}}"></script>
-        
+        <script type="text/javascript">
+            var building_list = {{ building_map|tojson }};
+            console.log(building_list[0]['building_name'])
+            console.log(building_list[2]['building_name'])
+
+            for (let i = 0; i < building_list.length; i++) {
+                if(building_list[i]['buildling_name'] != '춘천빌딩1') requestData(building_list[i]['building_name'])
+            }
+
+
+            async function requestData(buildingName){
+                var bdname = buildingName
+                $.ajax({
+                    url: '/api/building/' + bdname + '/status',
+                    success: function (data) {
+                        console.log(data)
+                        document.getElementById(bdname).innerText = data['is_warn']
+                        if(data['is_warn'] == '정상'){
+                            document.getElementById(bdname).classList.remove('danger')
+                            document.getElementById(bdname).classList.add('safe')
+                        }else{
+                            document.getElementById(bdname).classList.remove('safe')
+                            document.getElementById(bdname).classList.add('danger')
+                        }
+                        setTimeout(requestData(buildingName), 3600000);
+                    },
+                    cache: false
+                })
+            }
+
+            {#async function requestDataChung() {#}
+            {#    $.ajax({#}
+            {#        url: '/api/building/' + building_list[0]['building_name'] + '/status',#}
+            {#        success: function (data) {#}
+            {#            console.log(data['is_warn'])#}
+            {#            document.getElementById(building_list[0]['building_name']).innerText = '정상'#}
+            {#            document.getElementById(building_list[0]['building_name']).classList.remove('danger')#}
+            {#            document.getElementById(building_list[0]['building_name']).classList.add('safe')#}
+            {#            setTimeout(requestDataChung(), 3600000);#}
+            {#        },#}
+            {#        cache: false#}
+            {#    })#}
+            {#}#}
+            {##}
+            {# async function requestDataUlsan() {#}
+            {#    $.ajax({#}
+            {#        url: '/api/building/' + building_list[2]['building_name'] + '/status',#}
+            {#        success: function (data) {#}
+            {#            document.getElementById(building_list[2]['building_name']).innerText = '정상'#}
+            {#            document.getElementById(building_list[2]['building_name']).classList.remove('danger')#}
+            {#            document.getElementById(building_list[2]['building_name']).classList.add('safe')#}
+            {#            console.log(data['is_warn'])#}
+            {#            setTimeout(requestDataUlsan(), 3600000);#}
+            {##}
+            {#        },#}
+            {#        cache: false#}
+            {#    })#}
+            {# }#}
+
+        </script>
     </body>
 </html>
