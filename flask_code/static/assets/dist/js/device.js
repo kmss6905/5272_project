@@ -8,42 +8,33 @@ const resultLonElement = document.getElementById('live_data_lon_difference')
 const liveHeightElement = document.getElementById('live_data_height');
 const resultHeightElement = document.getElementById('live_data_height_difference')
 
-function sseStart(criteriaLat, criteriaLon, criteriaHeight){
+function start(criteriaLat, criteriaLon, criteriaHeight){
 
-    var source = new EventSource("/stream");
-    source.onmessage = function(event) {
-        var x = (new Date()).getTime() // current time
+    if(chartLat != null && chartLon != null && chartHeight != null){
+        // console.log(event.data)
+        // _result_data = event.data.split('_')
+        // var time = event.data.split('_')[0]
+        // console.log(time)
+        // console.log(typeof time)
+        // var _result = time.split(' ')
+        // console.log(_result[1])
+        // var y = event.data.split('_')[1]
+        // var series = chartLat.series[0], sheift = series.data.length > 20; // shift if the series is longer than 20
+        requestDataLat()
+        requestDataLon()
+        requestDataHeight()
 
-        if(chartLat != null && chartLon != null && chartHeight != null){
-            console.log(event.data)
-            _result_data = event.data.split('_')
-            var time = event.data.split('_')[0]
-            console.log(time)
-            console.log(typeof time)
-            var _result = time.split(' ')
-            console.log(_result[1])
-            var y = event.data.split('_')[1]
-            // var series = chartLat.series[0], sheift = series.data.length > 20; // shift if the series is longer than 20
 
 
-            chartLat.series[0].addPoint([x, parseFloat(y)]) // 위도
-
-            chartLon.series[0].addPoint([x, parseFloat(y)]) // 경도 ( 수정해야함 )
-            chartHeight.series[0].addPoint([x, parseFloat(y)]) // 고도 ( 수정해야함 )
-
-            renderTableData(parseFloat(y), criteriaLat) // 위도
-
-            renderTableData(parseFloat(y), criteriaLon) // 경도 ( 수정해야함 )
-            renderTableData(parseFloat(y), criteriaHeight) // 고도 ( 수정해야함 )
-        }
-    };
+    }
 }
 
 // 테이블 데이터에 데이터를 렌더링 합니다.
-function renderTableData(liveData, criteriaData, maxValue, minValue, value){
+function renderTableData(liveData, maxValue, minValue, criteriaData, value){
     if(value == 'lat'){ // 위도
         liveLatElement.innerText = liveData // 실시간 위도
-        resultLatElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        var _result = parseFloat(liveData) - parseFloat(criteriaData)
+        resultLatElement.innerText = String(_result.toFixed(5));
         if(liveData > maxValue || liveData < minValue){ // 최대값보다 크거나 최소값 보다 작을 경우
             liveLatElement.style.color = "#FF0000"; // red color code
             resultLatElement.style.color = "#FF0000"; // red color code
@@ -54,7 +45,8 @@ function renderTableData(liveData, criteriaData, maxValue, minValue, value){
 
     if(value == 'lon'){
         liveLonElement.innerText = liveData // 실시간 경도
-        resultLonElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        var _result = parseFloat(liveData) - parseFloat(criteriaData)
+        resultLonElement.innerText = String(_result.toFixed(5));
         if(liveData > maxValue || liveData < minValue){ // 이상범위 밖
             liveLonElement.style.color = "#FF0000"; // red color code
             resultLonElement.style.color = "#FF0000"; // red color code
@@ -65,7 +57,8 @@ function renderTableData(liveData, criteriaData, maxValue, minValue, value){
 
     if(value == 'height'){
         liveHeightElement.innerText = liveData // 실시간 고도
-        resultHeightElement.innerText = String(parseFloat(liveData) - parseFloat(criteriaData));
+        var _result = parseFloat(liveData) - parseFloat(criteriaData)
+        resultHeightElement.innerText = String(_result.toFixed(5));
         if(liveData > maxValue || liveData < minValue){ // 최대값보다 크거나 최소값 보다 작을 경우
             liveHeightElement.style.color = "#FF0000"; // red color code
             resultHeightElement.style.color = "#FF0000"; // red color code
@@ -232,3 +225,67 @@ function getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, dev
 }
 
 
+
+
+/**
+ * Request data from the server, add it to the graph and set a timeout
+ * to request again
+ */
+async function requestDataLat() {
+    $.ajax({
+        url: '/api/live/syntest1/lat',
+        success: function(point) {
+            console.log(point)
+            var x = (new Date()).getTime() // current time
+            // var series = chartLat.series[0],
+            //     shift = series.data.length > 20; // shift if the series is
+            //                                      longer than 20
+            // add the point
+
+            chartLat.series[0].addPoint([x, point['value']]);
+            renderTableData(point['value'], 37.336469, 37.336456, 37.336467797, 'lat')
+            // call it again after one second
+            setTimeout(requestDataLat, 1000);
+        },
+        cache: false
+    });
+}
+
+async function requestDataLon() {
+    $.ajax({
+        url: '/api/live/syntest1/long',
+        success: function(point) {
+            console.log(point)
+            var x = (new Date()).getTime() // current time
+            // var series = chartLat.series[0],
+            //     shift = series.data.length > 20; // shift if the series is
+            //                                      longer than 20
+            // add the point
+
+            chartLon.series[0].addPoint([x, point['value']]);
+            renderTableData(point['value'], 126.596108, 126.596088, 126.596096,'lon')
+            // call it again after one second
+            setTimeout(requestDataLon, 1000);
+        },
+        cache: false
+    });
+}
+
+async function requestDataHeight() {
+    $.ajax({
+        url: '/api/live/syntest1/height',
+        success: function(point) {
+            console.log(point)
+            var x = (new Date()).getTime() // current time
+            // var series = chartLat.series[0],
+            //     shift = series.data.length > 20; // shift if the series is
+            //                                      longer than 20
+            // add the point
+            chartHeight.series[0].addPoint([x, point['value']]);
+            renderTableData(point['value'], 73.1, 69.170,70, 'height')
+            // call it again after one second
+            setTimeout(requestDataHeight, 1000);
+        },
+        cache: false
+    });
+}

@@ -195,5 +195,56 @@
         <!-- 지도 관련 자바스크립트-->
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=34d1438a57ce5be71a7e7fb9680a344d&libraries=services,clusterer,drawing"></script>
         <script src="{{url_for('static',filename='assets/dist/js/map.js')}}"></script>
+        <script type="text/javascript">
+            var building_list = {{ building_info|tojson }};
+            console.log(building_list[0]['building_name'])
+            console.log(building_list[2]['building_name'])
+
+
+
+            requestDataChung()
+            requestDataUlsan()
+
+
+            async function requestDataChung() {
+                $.ajax({
+                    url: '/api/building/' + building_list[0]['building_name'] + '/status',
+                    success: function (data) {
+                        console.log(data['is_warn'])
+                        document.getElementById(building_list[0]['building_name']).innerText = data['is_warn']
+                        if(data['is_warn'] == '정상'){
+                            document.getElementById(building_list[0]['building_name']).classList.remove('danger')
+                            document.getElementById(building_list[0]['building_name']).classList.add('safe')
+                        }else if(data['is_warn'] == '이상발생'){
+                            document.getElementById(building_list[0]['building_name']).classList.remove('safe')
+                            document.getElementById(building_list[0]['building_name']).classList.add('danger')
+                        }
+                        setTimeout(requestDataChung(), 3600000);
+                    },
+                    cache: false
+                })
+            }
+
+             async function requestDataUlsan() {
+                $.ajax({
+                    url: '/api/building/' + building_list[2]['building_name'] + '/status',
+                    success: function (data) {
+                        document.getElementById(building_list[2]['building_name']).innerText = data['is_warn']
+                        if (data['is_warn'] == '정상'){
+                            document.getElementById(building_list[2]['building_name']).classList.remove('danger')
+                            document.getElementById(building_list[2]['building_name']).classList.add('safe')
+                        }else if(data['is_warn'] == '이상발생'){
+                            document.getElementById(building_list[2]['building_name']).classList.remove('safe')
+                            document.getElementById(building_list[2]['building_name']).classList.add('danger')
+                        }
+                        console.log(data['is_warn'])
+                        setTimeout(requestDataUlsan(), 3600000);
+
+                    },
+                    cache: false
+                })
+             }
+
+        </script>
     </body>
 </html>
