@@ -6,7 +6,7 @@ import redis
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g, make_response, Response
 from device_data_dao import each_device_info
 from sql_loop import pick_sql_data
-from model.User import User
+from model.user import User
 from repo.user_repo import *  # USER repository
 import building_data_dao
 import device_list_dao
@@ -126,17 +126,19 @@ def building_page(building_name):
 def devices(building_name, device_id):
     print(building_name, device_id)
     # 계측기 데이터
-    device_info = each_device_info("syntest1")
+    device_info = each_device_info(device_id)
     device_info[0]['device_name'] = device_id  # 계측기 이름 추가
 
     # 날씨정보
-    weatherData = weather.get_weather("syntest1")
+    weatherData = weather.get_weather(device_id)
     print(weatherData)
+
     # boxplot 데이터
-    r = json.dumps(box_plot.plot("syntest1", 5))
+    r = json.dumps(box_plot.plot(device_id, 5))
     boxplotData = json.loads(r)
     print(boxplotData)
 
+    print('-----')
     print(device_info)
     # 실시간 데이터
     return render_template('device.html',
@@ -240,7 +242,7 @@ if __name__ == "__main__":
     # print(box_plot.plot("syntest1", 5))
     # r = json.dumps(box_plot.plot("syntest1", 5))
     # loaded_r = json.loads(r)
-    print(getliveData('syntest1', 'long'))
-    print(tf_check.warning_building('충무로영상센터'))
-    print(tf_check.warning_building('울산'))
+    # print(getliveData('syntest1', 'long'))
+    # print(tf_check.warning_building('충무로영상센터'))
+    # print(tf_check.warning_building('울산'))
     app.run(threaded=True, host="localhost", port=3000, debug=True)

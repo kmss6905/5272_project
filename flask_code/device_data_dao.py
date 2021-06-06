@@ -46,7 +46,7 @@ def each_device_building(login_user_id,building_name):
 
 def each_device_info(device_id):
     conn = db_conn.get_connection()
-    sql ='select device.device_location,user.user_phone_number,device.device_latitude,device.device_longitude,device.device_height from device inner join user on user.user_id= device.device_user_id where device.device_id=%s'
+    sql ='select device.device_criteria_latitude, device.device_criteria_height, device.device_criteria_longitude,  device.device_criteria_latitude_min, device.device_criteria_longitude_min, device.device_criteria_height_min, device.device_location,user.user_phone_number,device.device_latitude,device.device_longitude,device.device_height from device inner join user on user.user_id= device.device_user_id where device.device_id=%s'
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute(sql,device_id)
     rows = cursor.fetchall()
