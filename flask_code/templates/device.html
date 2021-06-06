@@ -276,7 +276,7 @@
           <!-- box plot날짜선택 -->
         <div class="row justify-content-start">
               <div class="col">
-                  <h5>경도 <i class="bi bi-bar-chart-line"></i></h5>
+                  <h5>고도 <i class="bi bi-bar-chart-line"></i></h5>
               </div>
               <div class="col-12">
                   <label for="start">Start date:</label>
@@ -349,18 +349,29 @@
         var dataList = {{ boxplotData['boxplot_data']|tojson }};
         console.log(dataList)
 
+        var deviceInfo = {{ device_info|tojson }}
+        console.log(deviceInfo)
+        console.log(deviceInfo['device_longitude']) // 기준 위도
+        console.log(deviceInfo['device_latitude']) // 기준 경도
+        console.log(deviceInfo['device_height']) // 기준 고도
+
+
+
         // render_plot 에서 시행합니다.
-        render_plot(dataList[0]['data'], 'plot-lat', 'Box Chart : 위도', "측정 기간", "위도", 37.336456, 37.336469, 37.33646) // 위도
-        render_plot(dataList[1]['data'], 'plot-lon', 'Box Chart : 경도', "측정 기간", "경도", 126.596108, 126.596088, 126.596096) // 경도
-        render_plot(dataList[2]['data'], 'plot-height', 'Box Chart : 고도', '측정 기간', '고도', 69.1, 73.1, 70) // 고도
+        render_plot(dataList[0]['data'], 'plot-lat', 'Box Chart : 위도', "측정 기간", "위도", deviceInfo['device_criteria_latitude_min'], deviceInfo['device_criteria_latitude'], deviceInfo['device_latitude']) // 위도
+        render_plot(dataList[1]['data'], 'plot-lon', 'Box Chart : 경도', "측정 기간", "경도", deviceInfo['device_criteria_longitude_min'], deviceInfo['device_criteria_longitude'], deviceInfo['device_longitude']) // 경도
+        render_plot(dataList[2]['data'], 'plot-height', 'Box Chart : 고도', '측정 기간', '고도', deviceInfo['device_criteria_height_min'], deviceInfo['device_criteria_height'], deviceInfo['device_height']) // 고도
 
         // render line graph
         // 위도 -> 37.336456, 37.336469
-        renderLineGraph('live-lat', '실시간 위도 관측 그래프', '위도', 37.336456, 37.336469, 37.336467797, window.location.href.split('/')[5])
-        renderLineGraph('live-lon', '실시간 경도 관측 그래프', '경도', 126.596088, 126.596108, 126.596096, window.location.href.split('/')[5])
-        renderLineGraph('live-height', '실시간 고도 관측 그래프', '고도', 69.1, 73.1, 70, window.location.href.split('/')[5])
+        renderLineGraph('live-lat', '실시간 위도 관측 그래프', '위도', deviceInfo['device_criteria_latitude_min'], deviceInfo['device_criteria_latitude'],deviceInfo['device_latitude'], window.location.href.split('/')[5])
+        renderLineGraph('live-lon', '실시간 경도 관측 그래프', '경도', deviceInfo['device_criteria_longitude_min'], deviceInfo['device_criteria_longitude'], deviceInfo['device_longitude'], window.location.href.split('/')[5])
+        renderLineGraph('live-height', '실시간 고도 관측 그래프', '고도', deviceInfo['device_criteria_height_min'], deviceInfo['device_criteria_height'], deviceInfo['device_height'], window.location.href.split('/')[5])
 
-        start()
+
+        requestDataLat(deviceInfo['device_name'], deviceInfo['device_criteria_latitude'], deviceInfo['device_criteria_latitude_min'], deviceInfo['device_latitude'])
+        requestDataLon(deviceInfo['device_name'], deviceInfo['device_criteria_longitude'], deviceInfo['device_criteria_longitude_min'], deviceInfo['device_longitude'])
+        requestDataHeight(deviceInfo['device_name'], deviceInfo['device_criteria_height'], deviceInfo['device_criteria_height_min'], deviceInfo['device_height'])
     </script>
   <script>
 </script>

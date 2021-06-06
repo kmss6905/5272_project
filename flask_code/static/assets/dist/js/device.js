@@ -8,27 +8,6 @@ const resultLonElement = document.getElementById('live_data_lon_difference')
 const liveHeightElement = document.getElementById('live_data_height');
 const resultHeightElement = document.getElementById('live_data_height_difference')
 
-function start(criteriaLat, criteriaLon, criteriaHeight){
-
-    if(chartLat != null && chartLon != null && chartHeight != null){
-        // console.log(event.data)
-        // _result_data = event.data.split('_')
-        // var time = event.data.split('_')[0]
-        // console.log(time)
-        // console.log(typeof time)
-        // var _result = time.split(' ')
-        // console.log(_result[1])
-        // var y = event.data.split('_')[1]
-        // var series = chartLat.series[0], sheift = series.data.length > 20; // shift if the series is longer than 20
-        requestDataLat()
-        requestDataLon()
-        requestDataHeight()
-
-
-
-    }
-}
-
 // 테이블 데이터에 데이터를 렌더링 합니다.
 function renderTableData(liveData, maxValue, minValue, criteriaData, value){
     if(value == 'lat'){ // 위도
@@ -40,6 +19,9 @@ function renderTableData(liveData, maxValue, minValue, criteriaData, value){
             resultLatElement.style.color = "#FF0000"; // red color code
             resultLatElement.innerText = resultLatElement.innerText + " (정상범위 초과)"
             window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 위도 ]");
+        }else {
+            liveLatElement.style.color = "#00FF00"; // red color code
+            resultLatElement.style.color = "#00FF00"; // red color code
         }
     }
 
@@ -52,7 +34,11 @@ function renderTableData(liveData, maxValue, minValue, criteriaData, value){
             resultLonElement.style.color = "#FF0000"; // red color code
             resultLonElement.innerText = resultLonElement.innerText + " (정상범위 초과)"
             window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 경도 ]");
+        }else{
+            liveLonElement.style.color = "#00FF00"; // red color code
+            resultLonElement.style.color = "#00FF00"; // red color code
         }
+
     }
 
     if(value == 'height'){
@@ -64,6 +50,9 @@ function renderTableData(liveData, maxValue, minValue, criteriaData, value){
             resultHeightElement.style.color = "#FF0000"; // red color code
             resultHeightElement.innerText = resultLatElement.innerText + " (정상범위 초과)"
             window.alert("정상범위를 초과하는 데이터가 감지되었습니다. 확인바랍니다. [ 고도 ]");
+        }else{
+            liveHeightElement.style.color = "#00FF00"; // red color code
+            resultHeightElement.style.color = "#00FF00"; // red color code
         }
     }
 }
@@ -174,6 +163,9 @@ function getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, dev
             title: {
                 text: title
             },
+            global: {
+                useUTC: true
+            },
             yAxis: {
                 minColor: 'green',
                 min: minRate,
@@ -231,9 +223,13 @@ function getStockChart(elementName, title, yAxis, minRate, maxRate, absRate, dev
  * Request data from the server, add it to the graph and set a timeout
  * to request again
  */
-async function requestDataLat() {
+async function requestDataLat(deviceName, max, min, cri) {
+    var deviceId = deviceName
+    var maxValue = max;
+    var minValue = min;
+    var criValue = cri;
     $.ajax({
-        url: '/api/live/syntest1/lat',
+        url: '/api/live/' + deviceId +'/lat',
         success: function(point) {
             console.log(point)
             var x = (new Date()).getTime() // current time
@@ -243,37 +239,47 @@ async function requestDataLat() {
             // add the point
 
             chartLat.series[0].addPoint([x, point['value']]);
-            renderTableData(point['value'], 37.336469, 37.336456, 37.336467797, 'lat')
+            renderTableData(point['value'], maxValue, minValue, criValue, 'lat')
             // call it again after one second
-            setTimeout(requestDataLat, 1000);
+            setTimeout(requestDataLat(deviceId, maxValue,  minValue, criValue), 1000);
         },
         cache: false
     });
 }
 
-async function requestDataLon() {
+async function requestDataLon(deviceName, max, min, cri) {
+    var deviceId = deviceName
+    var maxValue = max;
+    var minValue = min;
+    var criValue = cri;
     $.ajax({
-        url: '/api/live/syntest1/long',
+        url: '/api/live/' + deviceId + '/long',
         success: function(point) {
-            console.log(point)
             var x = (new Date()).getTime() // current time
+
+            console.log(point)
+            // var x = (new Date()).getTime() // current time
             // var series = chartLat.series[0],
             //     shift = series.data.length > 20; // shift if the series is
             //                                      longer than 20
             // add the point
 
             chartLon.series[0].addPoint([x, point['value']]);
-            renderTableData(point['value'], 126.596108, 126.596088, 126.596096,'lon')
+            renderTableData(point['value'], maxValue, minValue, criValue,'lon')
             // call it again after one second
-            setTimeout(requestDataLon, 1000);
+            setTimeout(requestDataLon(deviceId, max, min, cri), 1000);
         },
         cache: false
     });
 }
 
-async function requestDataHeight() {
+async function requestDataHeight(deviceName, max, min, cri) {
+    var deviceId = deviceName
+    var maxValue = max;
+    var minValue = min;
+    var criValue = cri;
     $.ajax({
-        url: '/api/live/syntest1/height',
+        url: '/api/live/' + deviceId + '/height',
         success: function(point) {
             console.log(point)
             var x = (new Date()).getTime() // current time
@@ -282,9 +288,9 @@ async function requestDataHeight() {
             //                                      longer than 20
             // add the point
             chartHeight.series[0].addPoint([x, point['value']]);
-            renderTableData(point['value'], 73.1, 69.170,70, 'height')
+            renderTableData(point['value'], maxValue, minValue, criValue, 'height')
             // call it again after one second
-            setTimeout(requestDataHeight, 1000);
+            setTimeout(requestDataHeight(deviceId, maxValue, minValue, criValue), 1000);
         },
         cache: false
     });

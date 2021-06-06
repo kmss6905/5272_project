@@ -193,14 +193,12 @@
         <script src="{{url_for('static',filename='assets/dist/js/map.js')}}"></script>
         <script type="text/javascript">
             var building_list = {{ building_map|tojson }};
-            console.log(building_list[0]['building_name'])
-            console.log(building_list[2]['building_name'])
+            console.log(building_list)
 
             for (let i = 0; i < building_list.length; i++) {
-                if(building_list[i]['buildling_name'] != '춘천빌딩1') requestData(building_list[i]['building_name'])
+                if(building_list[i]['buildling_name'] != '춘천빌딩1')
+                    requestData(building_list[i]['building_name'])
             }
-
-
             async function requestData(buildingName){
                 var bdname = buildingName
                 $.ajax({
