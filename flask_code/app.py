@@ -161,7 +161,7 @@ def register_device():
         d_loc = request.form['d_loc']
 
         device_data_dao.register_my_device(login_user_id,b_name,b_type,b_addr,d_id,d_name,d_loc)
-
+        device_data_dao.register_device_to_building(login_user_id,b_name,b_type,b_addr)
     return render_template('register_form.html')
 
 # @app.route('/tf/<device_id>')  # highchart 실시간 그래프 그리기

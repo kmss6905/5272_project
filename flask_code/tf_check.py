@@ -20,7 +20,6 @@ def warning_building(building_name):
         "is_warn" : rows[0]['building_tf']
     }
     if rows[0]['building_tf'] =='이상발생':
-        print('실행되냐')
         account_sid = 'AC3b9a05724c78abd037b899eff26f9358'
         auth_token = '056beb7d7acfd15640ce9c958b8d4f3d'
         client = Client(account_sid, auth_token)

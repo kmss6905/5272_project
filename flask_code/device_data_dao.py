@@ -92,11 +92,12 @@ def index_find_building():
 
 def register_my_device(login_user_id,b_name,b_type,b_addr,d_id,d_name,d_loc):
     lat,long,height = d_loc.split('/')
-    t_date = datetime.today()
+    t_date = datetime.today().date()
+    print(t_date)
     conn = db_conn.get_connection()
     max_id = index_find_device()['MAX(id)'] +1
-    sql_insert ='insert into device values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-    values = (max_id,d_id,d_name,login_user_id,t_date,pymysql.NULL,pymysql.NULL,pymysql.NULL,pymysql.NULL,b_type,b_addr,b_name,float(lat),float(long),float(height))
+    sql_insert ='insert into device values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+    values = (max_id,d_id,d_name,login_user_id,t_date,pymysql.NULL,100,100,100,b_type,b_addr,b_name,float(lat),float(long),float(height),0,0,0,'정상')
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute(sql_insert,values)
     conn.commit()
@@ -109,12 +110,11 @@ def register_device_to_building(login_user_id,b_name,b_type,b_addr):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute(sql_find,b_type)
     b_type_name = cursor.fetchone()
-    sql_insert ='insert into building values (%s,%s,%s,%s,%s,%s)'
-    values = (max_id,b_addr,b_type,b_type_name['building_type_name'],b_name,login_user_id)
+    sql_insert ='insert into building values (%s,%s,%s,%s,%s,%s,%s)'
+    values = (max_id,b_addr,b_type,b_type_name['building_type_name'],b_name,login_user_id,'정상')
     cursor.execute(sql_insert,values)
     conn.commit()
     conn.close()
-
-
+        
 
 
